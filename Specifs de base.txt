@@ -1,0 +1,52 @@
+Ressource = une adresse (url) = un noeud
+	Attributs :
+		? url : string
+		? type ?
+
+	? Une classe ou se limite-elle à une string?
+	=> Peut-être une classe pour la réutilisabilité
+
+
+Requête = un hit = un arc
+	Attributs :
+		? Date (seulement heure est utile)
+		? referenceur : ressource
+		? reference : ressource
+
+		? quantite d'octets : int
+		? IP : string
+		? logname
+		? aut name
+		
+
+Dico : spécialisation de map
+	? clé = requete (plus exactement un bout de requête)
+	? valeur = nombre de hit
+
+Application :
+	? flags
+	? 2*dicos (ressources + requetes)
+
+
+NB : seul le -g produit un graphe !
+
+Questions :
+? Y' a-t-il un seul logname par fichier .log ? NON MAIS OSEF
+? Doit-on faire comme s'il y avait vraiment un logname ? OUI, C'EST UN - :)
+? Que fait-on des codes de retour d'erreurs ? ON NE PREND QUE LES 200
+? Ne prend-on que les requêtes de type GET ? ON NE PREND QUE LES GETS
+? Plusieurs options à la fois ? OUI, TOUTES SI ON VEUT
+
+
+requete : requeteur, requeté
+requeteur, requete = ressources
+map : requete, nombreHITS
+
+
+Flags pour les options !
+
+
+
+
+
+	
