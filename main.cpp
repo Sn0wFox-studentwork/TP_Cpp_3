@@ -1,24 +1,8 @@
 #include <iostream>
 #include <string>
-#include <map>
+#include "Application.h"
 using namespace std;
 
-struct EtatNoeud
-{
-	int Occurences;
-	bool EstIsole;
-	EtatNoeud() : Occurences(0), EstIsole(true) { };
-	EtatNoeud(const EtatNoeud& unEtat) :	Occurences(unEtat.Occurences),
-											EstIsole(unEtat.EstIsole){ };
-	EtatNoeud& operator++() { ++Occurences; return *this; };	// prefix
-	EtatNoeud operator++(int) { EtatNoeud res(*this);			// postfix
-								++(*this);
-								return res; };
-};
-
-
-typedef map<string, EtatNoeud> DicoNoeuds;
-typedef map<string, int> DicoRequetes;
 
 
 int main(int argc, char** argv)
