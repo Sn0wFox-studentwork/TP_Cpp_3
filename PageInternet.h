@@ -8,20 +8,20 @@
 //---------- Interface de la classe <${file_base}> (fichier ${file_name}) ------
 #if ! defined ( PAGEINTERNET_H )
 #define PAGEINTERNET_H
-
+#include <string>
 //--------------------------------------------------- Interfaces utilisées
 
-//------------------------------------------------------------- Constantes 
+//------------------------------------------------------------- Constantes
 
-//------------------------------------------------------------------ Types 
+//------------------------------------------------------------------ Types
 
-//------------------------------------------------------------------------ 
+//------------------------------------------------------------------------
 // Rôle de la classe <${file_base}>
 //
 //
-//------------------------------------------------------------------------ 
+//------------------------------------------------------------------------
 
-class PageInternet: 
+class PageInternet:
 {
 //----------------------------------------------------------------- PUBLIC
 
@@ -33,6 +33,36 @@ public:
     // Contrat :
     //
 
+    std::string GetRacine() const;
+    // Mode d'emploi :
+    //
+    // Contrat :
+    // Doit renvoyer "-" si l'adresse est "-"
+    // Doit renvoyer "" si l'adresse est locale
+
+	std::string GetExtension() const;
+	// Mode d'emploi :
+    //
+    // Contrat :
+    //
+
+	std::string GetType() const;
+	// Mode d'emploi :
+    //
+    // Contrat :
+    //
+
+    std::string GetOutputComplet() const;
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
+
+    std::string GetOutputComplet() const;
+    // Mode d'emploi :
+    //
+    // Contrat :
+    //
 
 //------------------------------------------------- Surcharge d'opérateurs
     PageInternet& operator = ( const PageInternet& unPageInternet);
@@ -61,7 +91,7 @@ public:
     // Contrat :
     //
 
-//------------------------------------------------------------------ PRIVE 
+//------------------------------------------------------------------ PRIVE
 
 protected:
 //----------------------------------------------------- Méthodes protégées
@@ -71,6 +101,7 @@ private:
 
 protected:
 //----------------------------------------------------- Attributs protégés
+    string adresse;
 
 private:
 //------------------------------------------------------- Attributs privés
