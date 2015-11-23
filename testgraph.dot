@@ -1,0 +1,11 @@
+digraph{
+	
+	G1 -> G2 [label="10"];
+	G1 -> G2 [label="15"];
+	"http:/\/if.insa-lyon.fr/" -> G1 [label="30"];
+	G2 -> G3 [label="20"];
+	G1 [label = "lol"];
+	#G2;
+	#G3;
+	#G4;
+}	

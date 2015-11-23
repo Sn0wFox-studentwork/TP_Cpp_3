@@ -1,0 +1,77 @@
+﻿Structure pour une ressource -> classe PageInternet
+
+string adresse
+
+type 
+
+
+
+Classe d'application
+
+
+
+Dictionnaire de stockage de ressource 
+
+map[referencé] = etatNoeud(occurences, estIsole)
+
+-> simplifier declaration du noeud
+
+
+
+Dictionnaire 
+
+map[(referencé|referenceur)] = hits
+
+
+-> pour prendre en compte les paramètres d'executions
+	
+differentes fonctions de construction de la map
+	
+NOPE -> flags
+
+
+
+parser du fichier d'entrée ?
+
+
+Requête->classe
+
+Date ->
+
+Commande -> string
+
+Ressource referenceur -> ressource
+
+Ressource appelée -> ressource
+
+code de retour -> int
+
+qtité d'octet -> int
+
+navigateur -> string
+
+User_LogName -> string
+
+User_AutName -> string
+
+IP -> string
+
+
+
+
+/!\ un get peut prendre un http:// ou une adresse locale /x
+
+/!\ le referenceur peut être "-" (acces direct
+
+)
+
+
+Ressource:
+
+-> racine
+
+-> extension
+
+-> type
+
+
