@@ -53,19 +53,19 @@ public:
     //
 
     std::string GetOutputComplet() const;
-    // Mode d'emploi :
+    // Mode d'emploi : Renvoie la chaine pour output l'entierete de l'adresse dans un graphviz
     //
     // Contrat :
     //
 
-    std::string GetOutputComplet() const;
-    // Mode d'emploi :
+    std::string GetOutputExt() const;
+    // Mode d'emploi : Renvoie la chaine pour output l'extension de l'adresse dans un graphviz
     //
     // Contrat :
     //
 
 //------------------------------------------------- Surcharge d'opérateurs
-    PageInternet& operator = ( const PageInternet& unPageInternet);
+    PageInternet& operator = ( const PageInternet& unePageInternet);
     // Mode d'emploi :
     //
     // Contrat :
@@ -73,7 +73,7 @@ public:
 
 
 //-------------------------------------------- Constructeurs - destructeur
-    PageInternet( const PageInternet& unPageInternet);
+    PageInternet( const PageInternet& unePageInternet);
     // Mode d'emploi (constructeur de copie) :
     //
     // Contrat :
