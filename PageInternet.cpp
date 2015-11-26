@@ -69,7 +69,7 @@ std::string PageInternet::GetRacine() const
     return racine;
 }
 
-std::string GetOutputComplet() const
+std::string PageInternet::GetOutputComplet() const
 //Algorithme : recherche du // pour l'echapper+ echappage des "
 {
     size_t tampon = adresse.find("/");
@@ -82,7 +82,7 @@ std::string GetOutputComplet() const
         {
             if( adresse[tampon+1]=='/' )//on verifie que c'est // et pas / (à priori il n'y en aura qu'un)
             {
-                adresseEchappee = adresse.substr(0,tampon) + "\\" + adresse(tampon+1);//On insere un \ pour echapper le deuxieme /
+                adresseEchappee = adresse.substr(0,tampon) + "\\" + adresse[tampon+1];//On insere un \ pour echapper le deuxieme /
             }
             else
             {
@@ -98,7 +98,7 @@ std::string GetOutputComplet() const
     return "\"" + adresseEchappee + "\"";
 }
 
-std::string GetOutputExt() const
+std::string PageInternet::GetOutputExt() const
 //Algorithme : echappage des "
 {
     return "\"" + GetExtension() + "\"";
@@ -148,18 +148,24 @@ std::string PageInternet::GetExtension() const
     return extension;
 }
 
+string PageInternet::GetType() const
+{
+	return "";
+}
+
 //------------------------------------------------- Surcharge d'opérateurs
 PageInternet & PageInternet::operator = ( const PageInternet & unePageInternet )
 // Algorithme : egalité attributs à attributs
 {
     adresse = unePageInternet.adresse;
+	return *this;
 } //----- Fin de operator =
 
 
 //-------------------------------------------- Constructeurs - destructeur
-PageInternet::PageInternet ( const PageInternet & unePageInternet )
+PageInternet::PageInternet ( const PageInternet & unePageInternet ) :
+				adresse(unePageInternet.adresse)
 // Algorithme :
-adresse(unePageInternet.adresse)
 {
 #ifdef MAP
     cout << "Appel au constructeur de copie de <PageInternet>" << endl;
@@ -167,13 +173,13 @@ adresse(unePageInternet.adresse)
 } //----- Fin de PageInternet (constructeur de copie)
 
 
-PageInternet::PageInternet ( )
+PageInternet::PageInternet ( ) : adresse("-")
 // Algorithme : la page internet de base est celle de l'accès direct
 {
 #ifdef MAP
     cout << "Appel au constructeur de <PageInternet>" << endl;
 #endif
-    adresse = "-";
+
 } //----- Fin de PageInternet
 
 

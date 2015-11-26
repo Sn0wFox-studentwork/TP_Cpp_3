@@ -5,23 +5,26 @@
     copyright            : (C) 2015 par Pericas-Moya & Belletier
 *************************************************************************/
 
-//---------- Interface de la classe <${file_base}> (fichier ${file_name}) ------
+//---------- Interface de la classe <PageInternet> (fichier PageInternet.h) ------
 #if ! defined ( PAGEINTERNET_H )
 #define PAGEINTERNET_H
-#include <string>
+
 //--------------------------------------------------- Interfaces utilisées
+#include <string>
 
 //------------------------------------------------------------- Constantes
+const std::string IMAGE = ".png.gif.jpeg.jpg.bmp.tiff";		// Pages de type image
+const std::string SCRIPT = ".js.css";						// Pages de type script css ou javascript
 
 //------------------------------------------------------------------ Types
 
 //------------------------------------------------------------------------
-// Rôle de la classe <${file_base}>
+// Rôle de la classe <PageInternet>
 //
 //
 //------------------------------------------------------------------------
 
-class PageInternet:
+class PageInternet
 {
 //----------------------------------------------------------------- PUBLIC
 
@@ -33,39 +36,41 @@ public:
     // Contrat :
     //
 
-    std::string GetRacine() const;
+    std::string GetRacine ( ) const;
     // Mode d'emploi :
     //
     // Contrat :
     // Doit renvoyer "-" si l'adresse est "-"
     // Doit renvoyer "" si l'adresse est locale
 
-	std::string GetExtension() const;
+	std::string GetExtension ( ) const;
 	// Mode d'emploi :
     //
     // Contrat :
     //
 
-	std::string GetType() const;
-	// Mode d'emploi :
+	std::string GetType ( ) const;
+	// Mode d'emploi :	Retourne la constante IMAGE si la page est de type image,
+	//					SCRIPT si la page est de type css ou js,
+	//					une autre chaine sinon.
     //
     // Contrat :
     //
 
-    std::string GetOutputComplet() const;
+    std::string GetOutputComplet ( ) const;
     // Mode d'emploi : Renvoie la chaine pour output l'entierete de l'adresse dans un graphviz
     //
     // Contrat :
     //
 
-    std::string GetOutputExt() const;
+    std::string GetOutputExt ( ) const;
     // Mode d'emploi : Renvoie la chaine pour output l'extension de l'adresse dans un graphviz
     //
     // Contrat :
     //
 
 //------------------------------------------------- Surcharge d'opérateurs
-    PageInternet& operator = ( const PageInternet& unePageInternet);
+    PageInternet& operator = ( const PageInternet& unePageInternet );
     // Mode d'emploi :
     //
     // Contrat :
@@ -73,19 +78,21 @@ public:
 
 
 //-------------------------------------------- Constructeurs - destructeur
-    PageInternet( const PageInternet& unePageInternet);
+    PageInternet( const PageInternet& unePageInternet );
     // Mode d'emploi (constructeur de copie) :
     //
     // Contrat :
     //
 
-    PageInternet( );
+    PageInternet ( );
     // Mode d'emploi :
     //
     // Contrat :
     //
 
-    virtual ~PageInternet( );
+	PageInternet ( std::string url );
+
+    virtual ~PageInternet ( );
     // Mode d'emploi :
     //
     // Contrat :
@@ -101,7 +108,7 @@ private:
 
 protected:
 //----------------------------------------------------- Attributs protégés
-    string adresse;
+    std::string adresse;
 
 private:
 //------------------------------------------------------- Attributs privés
@@ -114,6 +121,6 @@ private:
 
 };
 
-//----------------------------------------- Types dépendants de <${file_base}>
+//----------------------------------------- Types dépendants de <PageInternet>
 
 #endif // PAGEINTERNET_H
