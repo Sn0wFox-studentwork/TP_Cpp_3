@@ -132,6 +132,13 @@ Application::~Application ( )
 #ifdef MAP
     cout << "Appel au destructeur de <Application>" << endl;
 #endif
+
+	// Désallocation de la map de requetes
+	for ( IterateurRequete it = dicoRequetes.begin( ); it !=dicoRequetes.begin( ); it++ )
+	{
+		delete it->first;
+	}
+
 }	//----- Fin de ~Application
 
 //------------------------------------------------------------------ PRIVE
@@ -177,7 +184,7 @@ void Application::remplirNoeuds ( std::string& ligne, int heure )
 		// TODO : verifier si on prend ou si on rejette la ligne
 	}
 
-	if ( flags & E_OPTION )
+	if ( ( flags & E_OPTION ) == E_OPTION )
 	{
 		// TODO : verifier si on prend ou si on rejette la ligne
 	}

@@ -86,9 +86,9 @@ void Tests()
 	DicoNoeuds ryan;
 	PageInternet p1("hi");
 	PageInternet p2("hi2");
-	ryan[&p1]++;
-	ryan[&p2]++;
-	ryan[&p1]++;	// Recherche dans une arbre rouge et noir... log(n)
+	ryan[p1]++;
+	ryan[p2]++;
+	ryan[p1]++;	// Recherche dans une arbre rouge et noir... log(n)
 	
 	EtatNoeud e;
 
@@ -98,7 +98,7 @@ void Tests()
 
 	for ( IterateurNoeud it = ryan.begin( ); it != ryan.end( ); it++ )
 	{
-		cout << it->first->GetOutputComplet( ) << ends << it->second.Occurences << endl;
+		cout << it->first.GetOutputComplet( ) << ends << it->second.Occurences << endl;
 	}
 }
 
