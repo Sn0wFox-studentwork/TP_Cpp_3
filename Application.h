@@ -14,11 +14,14 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 #include <string>
 #include <fstream>
 
+#include "PageInternet.h"
+#include "Requete.h"
+
 //------------------------------------------------------------------ Types
 struct EtatNoeud;										// Declaration anticipee ; realisation plus loin
 typedef uint16_t Uint16;								// Type des flags (options)
-typedef std::map<std::string, EtatNoeud> DicoNoeuds;	// Map de noeuds (adresses de PageInternet)
-typedef std::map<std::string, int> DicoRequetes;		// Map de requetes
+typedef std::map<PageInternet*, EtatNoeud> DicoNoeuds;	// Map de noeuds (adresses de PageInternet)
+typedef std::map<Requete*, int> DicoRequetes;			// Map de requetes
 typedef DicoNoeuds::iterator IterateurNoeud;			// Iterateur pour map de noeuds
 typedef DicoRequetes::iterator IterateurRequete;		// Iterateur pour map de requete
 
@@ -35,7 +38,8 @@ const Uint16 ALL_FLAGS	=		DRAW_GRAPH | E_OPTION | ONE_HOUR;	// Toutes les option
 
 //------------------------------------------------------------------------ 
 // Rôle de la classe <Application>
-//
+// La classe Application gere le fonctionnement global de l'application Analog.
+// 
 //
 //------------------------------------------------------------------------ 
 

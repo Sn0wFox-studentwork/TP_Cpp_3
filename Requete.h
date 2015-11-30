@@ -20,8 +20,17 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 
 //------------------------------------------------------------------------ 
 // Rôle de la classe <Requete>
-//
-//
+// La classe requete permet de modeliser une requete presente dans un journal
+// de logs de navigateur web. Elle possede deux PageInternets :
+// Refereceur qui represente la page sur laquelle l'utilisateur etait lorsqu'il a clique.
+// Cible qui represente la page ou il s'est rendu grace a son clic.
+// Requete possede egalement d'autres informations sur la requete effectuee :
+// sa date, l'IP de la machine et le nom de l'utilisateur.
+// 
+// Elle utilise l'allocation dynamique pour ses PageInternets, ce qui permet de ne pas saturer
+// la pile lorsqu'on traite des milliers de requetes.
+// TODO : ne pas mettre la derniere phrase ici, mais c'est pour s'en souvenir.
+// 
 //------------------------------------------------------------------------ 
 
 class Requete
@@ -31,8 +40,8 @@ class Requete
 public:
 
 //----------------------------------------------------- Méthodes publiques
-	PageInternet GetReferenceur ( ) const;
-	PageInternet GetCible ( ) const;
+	PageInternet* GetReferenceur ( ) const;
+	PageInternet* GetCible ( ) const;
 	// type Méthode ( liste de paramètres );
 	// Mode d'emploi :
 	//
@@ -41,7 +50,7 @@ public:
 
 
 //------------------------------------------------- Surcharge d'opérateurs
-	Requete &operator = (const Requete &unRequete);
+	Requete &operator = ( const Requete &unRequete );
 	// Mode d'emploi :
 	//
 	// Contrat :
@@ -67,7 +76,7 @@ public:
 	// Contrat :
 	//
 
-	Requete ( PageInternet* referenceur, PageInternet* cible );
+	Requete ( const PageInternet& referenceur, const PageInternet& cible );
 	// Mode d'emploi :
 	//
 	// Contrat :
@@ -89,8 +98,8 @@ private:
 
 protected:
 //----------------------------------------------------- Attributs protégés
-	PageInternet referenceur;
-	PageInternet cible;
+	PageInternet* referenceur;
+	PageInternet* cible;
 
 private:
 //------------------------------------------------------- Attributs privés

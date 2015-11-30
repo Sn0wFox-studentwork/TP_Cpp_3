@@ -142,7 +142,7 @@ int Application::ecrireGraph ( )
 {
 	// TODO :	implanter l'ecriture du graph
 	return 0;
-	return -1002;
+	return -1002;		// En cas d'erreur lors de l'ecriture
 }	//----- Fin de ecrireGraph
 
 void Application::afficherResultats ( )

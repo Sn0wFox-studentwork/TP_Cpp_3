@@ -50,9 +50,7 @@ public:
     //
 
 	std::string GetType ( ) const;
-	// Mode d'emploi :	Retourne la constante IMAGE si la page est de type image,
-	//					SCRIPT si la page est de type css ou js,
-	//					une autre chaine sinon.
+	// Mode d'emploi :	Retourne le type de la page (ce qui se situe apres le .).
     //
     // Contrat :
     //
@@ -90,7 +88,7 @@ public:
     // Contrat :
     //
 
-	PageInternet ( std::string url );
+	PageInternet ( const std::string& url );
 
     virtual ~PageInternet ( );
     // Mode d'emploi :

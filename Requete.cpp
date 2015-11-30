@@ -34,13 +34,13 @@ using namespace std;
 //} //----- Fin de Méthode
 
 
-PageInternet Requete::GetReferenceur( ) const
+PageInternet* Requete::GetReferenceur( ) const
 // Algorithme :
 {
 	return referenceur;
 }	//----- Fin de GetReferenceur
 
-PageInternet Requete::GetCible ( ) const
+PageInternet* Requete::GetCible ( ) const
 // Algorithme :
 {
 	return cible;
@@ -55,8 +55,8 @@ Requete & Requete::operator = ( const Requete & uneRequete )
 {
 	if ( this != &uneRequete )
 	{
-		referenceur = uneRequete.referenceur;
-		cible = uneRequete.cible;
+		referenceur = new PageInternet( *uneRequete.referenceur );
+		cible = new PageInternet( *uneRequete.cible );
 	}
 
 	return *this;
@@ -66,9 +66,9 @@ Requete & Requete::operator = ( const Requete & uneRequete )
 bool Requete::operator< ( const Requete & autreRequete ) const
 // Algorithme :
 {
-	if ( referenceur.GetOutputComplet( ) < autreRequete.referenceur.GetOutputComplet( ) )
+	if ( referenceur->GetOutputComplet( ) < autreRequete.referenceur->GetOutputComplet( ) )
 	{
-		if ( cible.GetOutputComplet( ) < autreRequete.cible.GetOutputComplet( ) )
+		if ( cible->GetOutputComplet( ) < autreRequete.cible->GetOutputComplet( ) )
 		{
 			return true;
 		}
@@ -83,9 +83,9 @@ bool Requete::operator< ( const Requete & autreRequete ) const
 
 bool Requete::operator== ( const Requete & autreRequete ) const
 {
-	if ( referenceur.GetOutputComplet( ) == autreRequete.referenceur.GetOutputComplet( ) )
+	if ( referenceur->GetOutputComplet( ) == autreRequete.referenceur->GetOutputComplet( ) )
 	{
-		if ( cible.GetOutputComplet( ) == autreRequete.cible.GetOutputComplet( ) )
+		if ( cible->GetOutputComplet( ) == autreRequete.cible->GetOutputComplet( ) )
 		{
 			return true;
 		}
@@ -99,12 +99,15 @@ bool Requete::operator== ( const Requete & autreRequete ) const
 
 //-------------------------------------------- Constructeurs - destructeur
 Requete::Requete ( const Requete & uneRequete ) :
-	referenceur( uneRequete.referenceur ), cible( uneRequete.cible )
+	referenceur( nullptr ), cible( nullptr )
 // Algorithme :	Construction a partir du constructeur par copie de PageInternet.
 {
 #ifdef MAP
     cout << "Appel au constructeur de copie de <Requete>" << endl;
 #endif
+
+	referenceur = new PageInternet( *uneRequete.referenceur );
+	cible = new PageInternet( *uneRequete.cible );
 
 }	//----- Fin de Requete ( constructeur de copie )
 
@@ -117,13 +120,18 @@ Requete::Requete ( ) : referenceur( ), cible( )
 #endif
 }	//----- Fin de Requete
 
-Requete::Requete ( PageInternet * ref, PageInternet * target ) :
-	referenceur( *ref ), cible( *target )
-// Algorithme :	Construction a partir du constructeur de copie de PageInternet.
+Requete::Requete ( const PageInternet& ref, const PageInternet& target ) :
+	referenceur( nullptr ), cible( nullptr )
+// Algorithme :	Construction a partir du constructeur de copie de PageInternet,
+//				et allocation dynamique.
 {
 #ifdef MAP
 	cout << "Appel au destructeur de <Requete>" << endl;
 #endif
+
+	referenceur = new PageInternet( ref );
+	cible = new PageInternet( target );
+
 }
 
 
@@ -134,7 +142,8 @@ Requete::~Requete ( )
     cout << "Appel au destructeur de <Requete>" << endl;
 #endif
 
-	// Pas d'allocation dynamique
+	delete referenceur;
+	delete cible;
 
 } //----- Fin de ~Requete
 

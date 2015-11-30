@@ -180,8 +180,14 @@ PageInternet::PageInternet ( ) : adresse("-")
     cout << "Appel au constructeur de <PageInternet>" << endl;
 #endif
 
-} //----- Fin de PageInternet
+}	//----- Fin de PageInternet
 
+
+PageInternet::PageInternet( const std::string& url ) : adresse( url )
+// Algorithme :
+{
+
+}	//----- Fin de PageInternet
 
 PageInternet::~PageInternet ( )
 // Algorithme : rien de particulier à faire
