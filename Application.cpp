@@ -34,12 +34,16 @@ using namespace std;
 //} //----- Fin de Méthode
 
 
-int Application::Run ( int heure )
+int Application::Run ( int heure, const string& nomGraph )
 // Algorithme :
 {
 	// Declarations des variables de traitement
 	ifstream fichier(fichierEntree, ios::in);
 	string lecture;
+	string tamponRequete;
+	string tamponRequeteur;
+	size_t posTampon;
+	const size_t SIZE_GET = string("GET ").length();
 
 	// Verification que le fichier ai bien ete ouvert
 	if ( !fichier )
@@ -52,11 +56,36 @@ int Application::Run ( int heure )
 	// Lecture du fichier et remplissage des structures
 	while ( getline ( fichier, lecture ) )		// Tant qu'il y a des lignes a lire
 	{
-		remplirNoeuds( lecture, heure );
-		if ( flags & DRAW_GRAPH )
+		// Parsage
+		posTampon = lecture.find("[");
+		posTampon = lecture.substr( posTampon ).find( ":" );
+		// Si on choisi de ne garder que les requetes a une certaine heure
+		if ( flags & ONE_HOUR )
 		{
-			remplirRequetes( lecture, heure );
+			// Si l'heure n'est pas bonne, on saute la ligne
+			if ( strtol( lecture.substr( posTampon + 1, 2 ).c_str( ), nullptr, 0 ) != heure )
+			{
+				continue;
+			}
 		}
+		posTampon = lecture.find("GET");
+		// Si il ne s'agit pas d'une requete de type GET, on saute la ligne
+		if ( posTampon != string::npos )
+		{
+			continue;
+		}
+		tamponRequete = lecture.substr( posTampon + SIZE_GET,
+			lecture.substr( posTampon + SIZE_GET ).find(" ") );
+			// A partir de la tampon contient l'url a laquelle on a voulu acceder
+		posTampon = lecture.substr( posTampon ).find( "\"" );
+			posTampon = lecture.substr( posTampon ).find( "\"" );
+			// posTampon arrive au debut de l'url du requeteur
+		tamponRequeteur = lecture.substr( posTampon, lecture.substr( posTampon ).find( "\"" ) );
+			// tamponRequeteur contient l'url du requeteur
+
+		// Remplissage structure
+		remplirGraph( tamponRequete, tamponRequeteur );
+
 	}
 
 	// Dessin du graphe si l'option a ete specifiee
@@ -90,19 +119,18 @@ Application& Application::operator = ( const Application & uneApplication )
 	if ( this != &uneApplication )
 	{
 		fichierEntree = uneApplication.fichierEntree;
-		dicoNoeuds = uneApplication.dicoNoeuds;
-		dicoRequetes = uneApplication.dicoRequetes;
+		graph = uneApplication.graph;
 		flags = uneApplication.flags;
 	}
 	return *this;
+
 }	//----- Fin de operator =
 
 
 //-------------------------------------------- Constructeurs - destructeur
 Application::Application ( const Application & uneApplication ) :
 	fichierEntree( uneApplication.fichierEntree ),
-	dicoNoeuds( uneApplication.dicoNoeuds ), dicoRequetes( uneApplication.dicoRequetes ),
-	flags( uneApplication.flags )
+	graph( uneApplication.graph ), flags( uneApplication.flags )
 // Algorithme :	Utilisation des constructeurs de copie de string, map et Uint16 (uint16_t).
 {
 #ifdef MAP
@@ -114,7 +142,7 @@ Application::Application ( const Application & uneApplication ) :
 
 
 Application::Application ( string fichierIn, Uint16 f ) :
-	fichierEntree( fichierIn ), dicoNoeuds( ), dicoRequetes( ), flags( f )
+	fichierEntree( fichierIn ), graph( ), flags( f )
 // Algorithme :
 //
 {
@@ -132,12 +160,6 @@ Application::~Application ( )
 #ifdef MAP
     cout << "Appel au destructeur de <Application>" << endl;
 #endif
-
-	// Désallocation de la map de requetes
-	for ( IterateurRequete it = dicoRequetes.begin( ); it !=dicoRequetes.begin( ); it++ )
-	{
-		delete it->first;
-	}
 
 }	//----- Fin de ~Application
 
@@ -159,38 +181,23 @@ void Application::afficherResultats ( )
 
 }	//----- Fin de remplirRequetes
 
-void Application::remplirRequetes ( std::string& ligne, int heure )
+void Application::remplirGraph ( const string& requete, const string& requeteur )
 // Algorithme :
+// TODO : mettre une retour
 {
-	if ( flags & ONE_HOUR )
+	PageInternet p( requete );
+	if ( ( flags & E_OPTION ) == E_OPTION )
 	{
-		// TODO : verifier si on prend ou si on rejette la ligne
+		if( IMAGE.find( p.GetType( ) ) != string::npos || SCRIPT.find( p.GetType( ) ) != string::npos )
+		{
+			return;		// On ne traite pas la ligne
+		}
 	}
 
-	if ( flags & E_OPTION )
-	{
-		// TODO : verifier si on prend ou si on rejette la ligne
-	}
+	// Insertion
 
 	// TODO : implanter le code d'insertion dans le dico de requetes
 
-}	//----- Fin de remplirRequetes
-
-void Application::remplirNoeuds ( std::string& ligne, int heure )
-// Algorithme :
-{
-	if ( flags & ONE_HOUR )
-	{
-		// TODO : verifier si on prend ou si on rejette la ligne
-	}
-
-	if ( ( flags & E_OPTION ) == E_OPTION )
-	{
-		// TODO : verifier si on prend ou si on rejette la ligne
-	}
-
-	// TODO : implanter le code d'insertion dans le dico de noeuds
-
-}	//----- Fin de remplirNoeuds
+}	//----- Fin de remplirGraph
 
 //------------------------------------------------------- Méthodes privées

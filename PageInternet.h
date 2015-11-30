@@ -40,8 +40,8 @@ public:
     // Mode d'emploi :
     //
     // Contrat :
-    // Doit renvoyer "-" si l'adresse est "-"
-    // Doit renvoyer "" si l'adresse est locale
+    // Doit renvoyer "-" si l'url est "-"
+    // Doit renvoyer "" si l'url est locale
 
 	std::string GetExtension ( ) const;
 	// Mode d'emploi :
@@ -56,24 +56,34 @@ public:
     //
 
     std::string GetOutputComplet ( ) const;
-    // Mode d'emploi : Renvoie la chaine pour output l'entierete de l'adresse dans un graphviz
+    // Mode d'emploi : Renvoie la chaine pour output l'entierete de l'url dans un graphviz
     //
     // Contrat :
     //
 
     std::string GetOutputExt ( ) const;
-    // Mode d'emploi : Renvoie la chaine pour output l'extension de l'adresse dans un graphviz
+    // Mode d'emploi : Renvoie la chaine pour output l'extension de l'url dans un graphviz
     //
     // Contrat :
     //
 
 //------------------------------------------------- Surcharge d'opérateurs
     PageInternet& operator = ( const PageInternet& unePageInternet );
+    // Mode d'emploi : donne une url similaire mais garde la différence d'identifiants
+    //
+    // Contrat :
+    //
+	bool operator< ( const PageInternet& unePageInternet ) const;
+	// Mode d'emploi :
+    //
+    // Contrat :
+    //
+    
+    bool operator== ( const PageInternet& unePageInternet ) const;
     // Mode d'emploi :
     //
     // Contrat :
     //
-
 
 //-------------------------------------------- Constructeurs - destructeur
     PageInternet( const PageInternet& unePageInternet );
@@ -106,7 +116,8 @@ private:
 
 protected:
 //----------------------------------------------------- Attributs protégés
-    std::string adresse;
+    std::string url;
+    bool estIsole;
 
 private:
 //------------------------------------------------------- Attributs privés

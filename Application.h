@@ -13,17 +13,16 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 #include <map>
 #include <string>
 #include <fstream>
+#include <vector>
 
 #include "PageInternet.h"
 #include "Requete.h"
 
 //------------------------------------------------------------------ Types
-struct EtatNoeud;										// Declaration anticipee ; realisation plus loin
-typedef uint16_t Uint16;								// Type des flags (options)
-typedef std::map<PageInternet*, EtatNoeud> DicoNoeuds;	// Map de noeuds (adresses de PageInternet)
-typedef std::map<Requete*, int> DicoRequetes;			// Map de requetes
-typedef DicoNoeuds::iterator IterateurNoeud;			// Iterateur pour map de noeuds
-typedef DicoRequetes::iterator IterateurRequete;		// Iterateur pour map de requete
+typedef uint16_t Uint16;							// Type des flags (options)
+typedef std::vector<Requete> Arcs;						// 
+typedef std::map<PageInternet, Arcs> Graph;			// Map de [noeuds, liens] (=[PageInternet, Ensemble des autres Page la referencant])
+typedef Graph::iterator IterateurGraph;				// Iterateur pour map de requete
 
 //------------------------------------------------------------- Constantes
 
@@ -49,7 +48,7 @@ class Application
 
 public:
 //----------------------------------------------------- Méthodes publiques
-	int Run ( int heure = 0 );
+	int Run ( int heure = 0, const std::string& nomGraph = "void.dot" );
 	// Mode d'emploi :	Lance l'application en effectuant les traitements definis par flags.
 	//					Retourne 0 si tout c'est bien passe.
 	//					Retourne -100X si erreur, X fonction de l'erreur.
@@ -108,13 +107,7 @@ protected:
 	// Contrat :
 	//
 
-	void remplirRequetes ( std::string& ligne, int heure );
-	// Mode d'emploi :
-	//
-	// Contrat :
-	//
-
-	void remplirNoeuds ( std::string& ligne, int heure );
+	void remplirGraph ( const std::string& requete, const std::string& requeteur );
 	// Mode d'emploi :
 	//
 	// Contrat :
@@ -126,8 +119,7 @@ private:
 protected:
 //----------------------------------------------------- Attributs protégés
 	std::string fichierEntree;
-	DicoNoeuds dicoNoeuds;
-	DicoRequetes dicoRequetes;
+	Graph graph;
 	Uint16 flags;
 
 private:
@@ -142,34 +134,6 @@ private:
 };
 
 //----------------------------------------- Types dépendants de <Application>
-// TODO : est-ce bien la place de EtatNoeud dans ce squelette ?
-struct EtatNoeud
-// Rôle de la struct <EtatNoeud> :
-//
-{
-	// Constructeurs / Destructeur
-	EtatNoeud() : Occurences( 0 ), EstIsole( true ) { }
-	EtatNoeud( const EtatNoeud& unEtat ) : Occurences(unEtat.Occurences),
-		EstIsole(unEtat.EstIsole) { }
-	~EtatNoeud() { }
-
-	// Surcharge d'operateurs
-	EtatNoeud& operator++ ( )			// ++ en prefix
-	{
-		++Occurences;
-		return *this;
-	}
-	EtatNoeud operator++(int)			// ++ en postfix
-	{
-		EtatNoeud res(*this);
-		++(*this);
-		return res;
-	}
-
-	// Attributs
-	int Occurences;
-	bool EstIsole;
-};
 
 #endif // APPLICATION_H
 

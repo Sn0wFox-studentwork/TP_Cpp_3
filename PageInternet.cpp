@@ -20,6 +20,7 @@ using namespace std;
 
 //---------------------------------------------------- Variables de classe
 
+
 //----------------------------------------------------------- Types privés
 
 
@@ -36,35 +37,35 @@ std::string PageInternet::GetRacine() const
 //Algorithme : recherche du / de séparation dans la chaine
 {
     std::string racine;
-    size_t tampon;//traite le cas où on a une adresse complète
-    if (adresse == "-")//traitement du cas limite
+    size_t tampon;//traite le cas où on a une url complète
+    if (url == "-")//traitement du cas limite
     {
         return "-";
     }
-    tampon = adresse.find("/");
+    tampon = url.find("/");
     if (tampon != string::npos)
     {
 
-        if(tampon < adresse.size() -2)//on evite la sortie de tableau au adresse suivant
+        if(tampon < url.size() -2)//on evite la sortie de tableau au url suivant
         {
-            if( adresse[tampon+1]=='/' )//on evite de s'arreter au // de http://
+            if( url[tampon+1]=='/' )//on evite de s'arreter au // de http://
             {
-                tampon = adresse.find("/",tampon+2);
-                racine = adresse.substr(0,tampon);
+                tampon = url.substr(tampon+2).find("/");
+                racine = url.substr(0,tampon);
             }
             else
             {
-                racine = adresse.substr(0,tampon);
+                racine = url.substr(0,tampon);
             }
         }
         else
         {
-            racine = adresse.substr(0,tampon);
+            racine = url.substr(0,tampon);
         }
     }
     else
     {
-        racine = adresse;
+        racine = url;
     }
     return racine;
 }
@@ -72,30 +73,30 @@ std::string PageInternet::GetRacine() const
 std::string PageInternet::GetOutputComplet() const
 //Algorithme : recherche du // pour l'echapper+ echappage des "
 {
-    size_t tampon = adresse.find("/");
-    std::string adresseEchappee = adresse;
+    size_t tampon = url.find("/");
+    std::string urlEchappee = url;
     //Recherche du //
     if (tampon != string::npos)
     {
 
-        if(tampon < adresse.size() -1)//on evite la sortie de tableau au adresse suivant
+        if(tampon < url.size() -1)//on evite la sortie de tableau au url suivant
         {
-            if( adresse[tampon+1]=='/' )//on verifie que c'est // et pas / (à priori il n'y en aura qu'un)
+            if( url[tampon+1]=='/' )//on verifie que c'est // et pas / (à priori il n'y en aura qu'un)
             {
-                adresseEchappee = adresse.substr(0,tampon) + "\\" + adresse[tampon+1];//On insere un \ pour echapper le deuxieme /
+                urlEchappee = url.substr(0,tampon) + "\\" + url[tampon+1];//On insere un \ pour echapper le deuxieme /
             }
             else
             {
-                adresseEchappee = adresse;
+                urlEchappee = url;
             }
         }
         else
         {
-            adresseEchappee = adresse;
+            urlEchappee = url;
         }
     }
     //retour
-    return "\"" + adresseEchappee + "\"";
+    return "\"" + urlEchappee + "\"";
 }
 
 std::string PageInternet::GetOutputExt() const
@@ -108,23 +109,23 @@ std::string PageInternet::GetExtension() const
 //Algorithme : recherche du / de séparation dans la chaine
 {
     std::string extension;
-    size_t tampon;//traite le cas où on a une adresse complète
-    if (adresse == "-")//traitement du cas limite
+    size_t tampon;//traite le cas où on a une url complète
+    if (url == "-")//traitement du cas limite
     {
         return "";
     }
-    tampon = adresse.find("/");
+    tampon = url.find("/");
     if (tampon != string::npos)
     {
 
-        if(tampon < adresse.size() -2)//on evite la sortie de tableau au adresse suivant
+        if(tampon < url.size() -2)//on evite la sortie de tableau au url suivant
         {
-            if( adresse[tampon+1]=='/' )//on evite de s'arreter au // de http://
+            if( url[tampon+1]=='/' )//on evite de s'arreter au // de http://
             {
-                tampon = adresse.find("/",tampon+2);
+                tampon = url.substr(tampon+2).find("/");
                 if ( tampon != string::npos)
                 {
-                    extension = adresse.substr(tampon);
+                    extension = url.substr(tampon);
                 }
                 else
                 {
@@ -133,12 +134,12 @@ std::string PageInternet::GetExtension() const
             }
             else
             {
-                extension = adresse.substr(tampon);
+                extension = url.substr(tampon);
             }
         }
         else
         {
-            extension = adresse.substr(tampon);
+            extension = url.substr(tampon);
         }
     }
     else
@@ -150,21 +151,46 @@ std::string PageInternet::GetExtension() const
 
 string PageInternet::GetType() const
 {
+	size_t tampon;//recupere l'url du dernier point
+	tampon = url.rfind(".");
+	if ( tampon != string::npos )//dans le cas où il y a un type de fichier défini
+	{
+		return url.substr(tampon);
+	}
 	return "";
 }
 
 //------------------------------------------------- Surcharge d'opérateurs
-PageInternet & PageInternet::operator = ( const PageInternet & unePageInternet )
-// Algorithme : egalité attributs à attributs
+PageInternet & PageInternet::operator= ( const PageInternet & unePageInternet )
+// Algorithme :	Si on n'est pas en train de faire unePageInternet = unePageInternet,
+//				on "copie" tout les champs :
+//				on les modifie pour qu'ils soient comme ceux de unePageInternet.
 {
-    adresse = unePageInternet.adresse;
+	if ( this != &unePageInternet)
+	{
+		url = unePageInternet.url;
+		estIsole = unePageInternet.estIsole;
+	}
 	return *this;
+
 } //----- Fin de operator =
 
+bool PageInternet::operator< ( const PageInternet& unePageInternet ) const
+//Algorithme : comparaison d'url
+{
+	return url < unePageInternet.url;
+
+} // Fin de operator <
+
+bool PageInternet::operator== ( const PageInternet& unePageInternet ) const
+{
+	return url == unePageInternet.url;
+} // Fin de operator ==
 
 //-------------------------------------------- Constructeurs - destructeur
 PageInternet::PageInternet ( const PageInternet & unePageInternet ) :
-				adresse(unePageInternet.adresse)
+				url(unePageInternet.url),
+				estIsole(unePageInternet.estIsole)
 // Algorithme :
 {
 #ifdef MAP
@@ -173,7 +199,7 @@ PageInternet::PageInternet ( const PageInternet & unePageInternet ) :
 } //----- Fin de PageInternet (constructeur de copie)
 
 
-PageInternet::PageInternet ( ) : adresse("-")
+PageInternet::PageInternet ( ) : url("-"), estIsole(true)
 // Algorithme : la page internet de base est celle de l'accès direct
 {
 #ifdef MAP
@@ -183,10 +209,12 @@ PageInternet::PageInternet ( ) : adresse("-")
 }	//----- Fin de PageInternet
 
 
-PageInternet::PageInternet( const std::string& url ) : adresse( url )
+PageInternet::PageInternet( const std::string& url ) : url( url ), estIsole(true)
 // Algorithme :
 {
-
+#ifdef MAP
+    cout << "Appel au constructeur par url de <PageInternet>" << endl;
+#endif
 }	//----- Fin de PageInternet
 
 PageInternet::~PageInternet ( )

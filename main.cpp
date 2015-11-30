@@ -6,8 +6,9 @@
 
 using namespace std;
 
-void Tests();
-void TestFlags();
+void Tests( );
+void TestFlags( );
+void TestFind( );
 
 int main ( unsigned int argc, char** argv )
 // Algorithme :	On commence par recuperer les options et le fichier d'entree.
@@ -19,15 +20,17 @@ int main ( unsigned int argc, char** argv )
 	// Declaration des variables de stockage et de manipulation
 	Uint16 flags = NO_FLAGS;
 	string lecture;
-	string heure;
+	string heure = "0";
 	string nomFichierEntree;
+	string nomGraph = "";
 
 	// Tests unitaires
-	Tests();
-	TestFlags();
+	Tests( );
+	TestFlags( );
+	TestFind( );
 	
 	// Recuperation des parametres
-	if ( argc + 1 < 2 )				// TODO : Enlever le +1 lors du deployement !!!
+	if ( argc < 2 )
 	{
 		// Si pas de parametres, fin de l'application
 		cerr << "Pas assez de parametres" << endl;
@@ -43,6 +46,11 @@ int main ( unsigned int argc, char** argv )
 			{
 			case 'g':					// Option [-g]
 				flags |= DRAW_GRAPH;
+				if ( i + 1 < lecture.size( ) )
+				{
+					nomGraph = argv[i + 1];
+				}
+				i++;		// On saute le prochain argument d'entree, puisqu'on vient de le lire
 				break;
 			case 'e':					// Option [-e]
 				flags |= E_OPTION;
@@ -76,29 +84,22 @@ int main ( unsigned int argc, char** argv )
 	Application app( nomFichierEntree, flags );
 
 	// Lancement du traitement puis fin du programme : on retourne la valeur retournee par Run
-	return app.Run( strtol( heure.c_str( ), nullptr, 0 ) );
+	return app.Run( strtol( heure.c_str( ), nullptr, 0 ), nomGraph );
 
 }
 
 void Tests()
 {
 	// Si la clef n'existe pas, la valeur prend une valeur nulle (fonction du type de la clef)
-	DicoNoeuds ryan;
+	Graph ryan;
 	PageInternet p1("hi");
 	PageInternet p2("hi2");
-	ryan[p1]++;
-	ryan[p2]++;
-	ryan[p1]++;	// Recherche dans une arbre rouge et noir... log(n)
-	
-	EtatNoeud e;
+	ryan[p1];
+	ryan[p2];
 
-	// Test de fonctionnement des operateurs ++(prefix) et ++(postfix)
-	cout << e++.Occurences << endl;
-	cout << ++e.Occurences << endl;
-
-	for ( IterateurNoeud it = ryan.begin( ); it != ryan.end( ); it++ )
+	for ( IterateurGraph it = ryan.begin( ); it != ryan.end( ); it++ )
 	{
-		cout << it->first.GetOutputComplet( ) << ends << it->second.Occurences << endl;
+		cout << it->first.GetOutputComplet( ) << endl;
 	}
 }
 
@@ -138,5 +139,24 @@ void TestFlags()
 		cout << "E_Option !" << endl;
 	}
 
+}
+
+void TestFind()
+{
+	string s = " lh 7 trolololo 7 youpi";
+	cout << s.find("7", 1, 1) << endl;
+	string lecture = "... - - [...] \"GET /temps/trololo/page.html HTTP/1.1\" 200 12325";
+	
+	size_t posTampon = lecture.find("GET");
+	cout << posTampon;
+	// Si il ne s'agit pas d'une requete de type GET, on saute la ligne
+	if ( posTampon == string::npos )
+	{
+		cout << "rate !";
+		return;
+	}
+	string tampon = lecture.substr(posTampon + string("GET ").length(),
+		lecture.substr(posTampon + string("GET ").length()).find(" "));
+	cout << tampon << "-" << endl;
 
 }
