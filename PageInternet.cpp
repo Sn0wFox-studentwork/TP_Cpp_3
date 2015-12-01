@@ -46,12 +46,20 @@ std::string PageInternet::GetRacine() const
     if (tampon != string::npos)
     {
 
-        if(tampon < url.size() -2)//on evite la sortie de tableau au url suivant
+        if(tampon < url.size() -2)//on evite la sortie de tableau au test suivant
         {
             if( url[tampon+1]=='/' )//on evite de s'arreter au // de http://
             {
-                tampon = url.substr(tampon+2).find("/");
-                racine = url.substr(0,tampon);
+                if(url.substr(tampon+2).find("/") != 2)
+                {
+                    tampon = url.substr(tampon+2).find("/");
+                    racine = url.substr(0,tampon);
+                }
+                else
+                {
+                    racine = url;
+                }
+
             }
             else
             {
@@ -83,7 +91,7 @@ std::string PageInternet::GetOutputComplet() const
         {
             if( url[tampon+1]=='/' )//on verifie que c'est // et pas / (à priori il n'y en aura qu'un)
             {
-                urlEchappee = url.substr(0,tampon) + "\\" + url[tampon+1];//On insere un \ pour echapper le deuxieme /
+                urlEchappee = url.substr(0,tampon+1) + "\\" + url.substr(tampon+1);//On insere un \ pour echapper le deuxieme /
             }
             else
             {
@@ -122,9 +130,9 @@ std::string PageInternet::GetExtension() const
         {
             if( url[tampon+1]=='/' )//on evite de s'arreter au // de http://
             {
-                tampon = url.substr(tampon+2).find("/");
-                if ( tampon != string::npos)
+                if ( url.substr(tampon+2).find("/") != string::npos)
                 {
+                    tampon = tampon + 2 + url.substr(tampon+2).find("/");
                     extension = url.substr(tampon);
                 }
                 else
