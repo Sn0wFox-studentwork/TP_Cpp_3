@@ -2,6 +2,10 @@
 #include <string>
 #include <cstdlib>
 #include <cstddef>
+// TODO : remove when release (those are just for tests)
+#include <algorithm>
+#include <list>
+
 #include "Application.h"
 
 using namespace std;
@@ -9,6 +13,20 @@ using namespace std;
 void Tests( );
 void TestFlags( );
 void TestFind( );
+void TestTri( );
+void TestGraph( );
+
+typedef pair<PageInternet*, int> AccesPage;
+typedef list<AccesPage> MeilleuresPages;
+typedef MeilleuresPages::iterator IterateurMeilleuresPages;
+
+struct ComparaisonAccesPages
+{
+	bool operator() ( const AccesPage& ap1, const AccesPage& ap2 ) const
+	{
+		return ap1.second > ap2.second;
+	}
+};
 
 int main ( unsigned int argc, char** argv )
 // Algorithme :	On commence par recuperer les options et le fichier d'entree.
@@ -25,9 +43,11 @@ int main ( unsigned int argc, char** argv )
 	string nomGraph = "";
 
 	// Tests unitaires
+	TestGraph( );
 	Tests( );
 	TestFlags( );
 	TestFind( );
+	TestTri( );
 	
 	// Recuperation des parametres
 	if ( argc < 2 )
@@ -97,13 +117,21 @@ void Tests()
 	ryan[p1];
 	ryan[p2];
 
+	PageInternet p("http://monwebsite/trololo.html");
+
+	if ( ryan.find(p) == ryan.end() )
+	{
+		cout << p.GetOutputComplet() << " non trouve !" << endl;
+		cout << p.GetRacine() << endl;
+	}
+
 	for ( IterateurGraph it = ryan.begin( ); it != ryan.end( ); it++ )
 	{
 		cout << it->first.GetOutputComplet( ) << endl;
 	}
 }
 
-void TestFlags()
+void TestFlags( )
 {
 	Uint16 flags = ALL_FLAGS;
 
@@ -158,5 +186,54 @@ void TestFind()
 	string tampon = lecture.substr(posTampon + string("GET ").length(),
 		lecture.substr(posTampon + string("GET ").length()).find(" "));
 	cout << tampon << "-" << endl;
+
+}
+
+void TestTri ( )
+{
+	PageInternet p1("page1.html");
+	PageInternet p2("page2.html");
+	PageInternet p3("page3.html");
+	MeilleuresPages mp;
+	mp.push_back( AccesPage( &p1, 7 ) );
+	mp.push_back( AccesPage( &p2, 9 ) );
+	mp.push_back( AccesPage( &p3, 3 ) );
+	ComparaisonAccesPages c;
+
+	for ( IterateurMeilleuresPages i = mp.begin(); i != mp.end(); i++ )
+	{
+		cout << i->first->GetOutputComplet() << ends << i->second << endl;
+	}
+
+	mp.sort( ComparaisonAccesPages( ) );
+
+	for ( IterateurMeilleuresPages i = mp.begin(); i != mp.end(); i++ )
+	{
+		cout << i->first->GetOutputComplet( ) << ends << i->second << endl;
+	}
+}
+
+void TestGraph ( )
+// Verifie que les pages sont bien clasees par ordre lexicographique
+{
+	Graph g;
+	PageInternet p1("page1.html");
+	PageInternet p2("page2.html");
+	PageInternet p3("page3.html");
+	PageInternet p4("monstyle.css");
+
+	Arcs & a = g[p3];
+	a.push_back( Requete( &p1 ) );
+	g[p4];
+	g[p1];
+	g[p2];
+
+	for ( IterateurGraph itg = g.begin( ); itg != g.end( ); itg++ )
+	{
+		cout << itg->first.GetOutputComplet( ) << endl;
+	}
+
+	cout << "g[p3][0].GetPageInternet->GetOutputComplet() via ref : "
+		<< a[0].GetPageInternet()->GetOutputComplet() << endl;
 
 }

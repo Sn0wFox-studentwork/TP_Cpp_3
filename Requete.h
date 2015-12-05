@@ -31,19 +31,29 @@ class Requete
 public:
 
 //----------------------------------------------------- Méthodes publiques
-	// type Méthode ( liste de paramètres );
+	
+	int GetNombreAcces ( ) const { return nombreAcces; }
 	// Mode d'emploi :
 	//
 	// Contrat :
 	//
 
+	PageInternet* GetPageInternet ( ) const { return requeteur; }
+	// Mode d'emploi :
+	//
+	// Contrat :
+	//
+
+	void IncrementeNombreAcces ( ) { nombreAcces++ ; }
 
 //------------------------------------------------- Surcharge d'opérateurs
-	Requete &operator = ( const Requete &unRequete );
+	Requete &operator = ( const Requete& uneRequete );
 	// Mode d'emploi :
 	//
 	// Contrat :
 	//
+
+	bool operator == ( const Requete& uneRequete ) const;
 
 //-------------------------------------------- Constructeurs - destructeur
 	Requete ( const Requete &uneRequete );
@@ -52,7 +62,7 @@ public:
 	// Contrat :
 	//
 
-	Requete ( PageInternet * const requeteur );
+	Requete ( PageInternet * const requeteur = nullptr );
 	// Mode d'emploi :
 	//
 	// Contrat :
@@ -74,7 +84,7 @@ private:
 
 protected:
 //----------------------------------------------------- Attributs protégés
-	PageInternet* Requeteur;
+	PageInternet* requeteur;
 	int nombreAcces;
 	// TODO : rajouter d'autres attributs
 

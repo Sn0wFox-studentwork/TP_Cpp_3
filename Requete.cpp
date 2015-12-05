@@ -43,7 +43,7 @@ Requete & Requete::operator = ( const Requete & uneRequete )
 {
 	if ( this != &uneRequete )
 	{
-		Requeteur = uneRequete.Requeteur;
+		requeteur = uneRequete.requeteur;
 		nombreAcces = uneRequete.nombreAcces;
 	}
 
@@ -52,9 +52,15 @@ Requete & Requete::operator = ( const Requete & uneRequete )
 }	//----- Fin de operator =
 
 
+bool Requete::operator== ( const Requete& uneRequete ) const
+// Algorithme :
+{
+	return *requeteur == *uneRequete.requeteur;
+}	//----- Fin de operator==
+
 //-------------------------------------------- Constructeurs - destructeur
 Requete::Requete ( const Requete & uneRequete ) :
-	Requeteur( uneRequete.Requeteur ), nombreAcces( uneRequete.nombreAcces )
+	requeteur( uneRequete.requeteur ), nombreAcces( uneRequete.nombreAcces )
 // Algorithme :	Construction a partir du constructeur par copie de PageInternet.
 {
 #ifdef MAP
@@ -64,14 +70,14 @@ Requete::Requete ( const Requete & uneRequete ) :
 }	//----- Fin de Requete ( constructeur de copie )
 
 
-Requete::Requete ( PageInternet * const requeteur ) : Requeteur( nullptr )
+Requete::Requete ( PageInternet * const pageRequetrice ) : requeteur( nullptr )
 // Algorithme :	Construction par defaut grace au constructeur par defaut de PageInternet.
 {
 #ifdef MAP
     cout << "Appel au constructeur de <Requete>" << endl;
 #endif
 
-	Requeteur = requeteur;
+	requeteur = pageRequetrice;
 
 }	//----- Fin de Requete
 

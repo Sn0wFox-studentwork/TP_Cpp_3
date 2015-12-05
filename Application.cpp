@@ -13,6 +13,8 @@
 using namespace std;
 #include <iostream>
 #include <fstream>
+#include <algorithm>
+#include <list>
 
 //------------------------------------------------------ Include personnel
 #include "Application.h"
@@ -22,17 +24,22 @@ using namespace std;
 //---------------------------------------------------- Variables de classe
 
 //----------------------------------------------------------- Types privés
+typedef pair<PageInternet*, int> AccesPage;
+typedef list<AccesPage> MeilleuresPages;
+typedef MeilleuresPages::iterator IterateurMeilleuresPages;
+
+struct ComparaisonAccesPages
+{
+	bool operator() ( const AccesPage& ap1, const AccesPage& ap2 ) const
+	{
+		return ap1.second > ap2.second;
+	}
+};
 
 //----------------------------------------------------------------- PUBLIC
 //-------------------------------------------------------- Fonctions amies
 
 //----------------------------------------------------- Méthodes publiques
-// type Application::Méthode ( liste de paramètres )
-// Algorithme :
-//
-//{
-//} //----- Fin de Méthode
-
 
 int Application::Run ( int heure, const string& nomGraph )
 // Algorithme :
@@ -43,7 +50,8 @@ int Application::Run ( int heure, const string& nomGraph )
 	string tamponRequete;
 	string tamponRequeteur;
 	size_t posTampon;
-	const size_t SIZE_GET = string("GET ").length();
+	const string STR_GET = string( "GET" );
+	const size_t SIZE_STR_GET = STR_GET.length();
 
 	// Verification que le fichier ai bien ete ouvert
 	if ( !fichier )
@@ -53,14 +61,14 @@ int Application::Run ( int heure, const string& nomGraph )
 		return -1001;
 	}
 	
-	// Lecture du fichier et remplissage des structures
+	// Lecture du fichier et remplissage du graph
 	while ( getline ( fichier, lecture ) )		// Tant qu'il y a des lignes a lire
 	{
-		// Parsage
+		// Recherche des premiers elements qui nous interessent
 		posTampon = lecture.find("[");
 		posTampon = lecture.substr( posTampon ).find( ":" );
 		// Si on choisi de ne garder que les requetes a une certaine heure
-		if ( flags & ONE_HOUR )
+		if ( ( flags & ONE_HOUR ) == ONE_HOUR )
 		{
 			// Si l'heure n'est pas bonne, on saute la ligne
 			if ( strtol( lecture.substr( posTampon + 1, 2 ).c_str( ), nullptr, 0 ) != heure )
@@ -68,30 +76,29 @@ int Application::Run ( int heure, const string& nomGraph )
 				continue;
 			}
 		}
-		posTampon = lecture.find("GET");
+		posTampon = lecture.find( STR_GET );
 		// Si il ne s'agit pas d'une requete de type GET, on saute la ligne
 		if ( posTampon != string::npos )
 		{
 			continue;
 		}
-		tamponRequete = lecture.substr( posTampon + SIZE_GET,
-			lecture.substr( posTampon + SIZE_GET ).find(" ") );
-			// A partir de la tampon contient l'url a laquelle on a voulu acceder
+		tamponRequete = lecture.substr( posTampon + SIZE_STR_GET + 1,
+			lecture.substr( posTampon + SIZE_STR_GET + 1 ).find(" ") );
+			// A partir de la tamponRequete contient l'url a laquelle on a voulu acceder
 		posTampon = lecture.substr( posTampon ).find( "\"" );
 			posTampon = lecture.substr( posTampon ).find( "\"" );
 			// posTampon arrive au debut de l'url du requeteur
 		tamponRequeteur = lecture.substr( posTampon, lecture.substr( posTampon ).find( "\"" ) );
 			// tamponRequeteur contient l'url du requeteur
 
-		// Remplissage structure
+		// Remplissage graph
 		remplirGraph( tamponRequete, tamponRequeteur );
-
 	}
 
-	// Dessin du graphe si l'option a ete specifiee
-	if ( flags & DRAW_GRAPH )
+	// Ecriture du graphe sur le disque au format .dot si l'option a ete specifiee
+	if ( ( flags & DRAW_GRAPH ) == DRAW_GRAPH )
 	{
-		return ecrireGraph( );		// On renvoie le code retour de ecrireGraph
+		return ecrireGraph( );		// On renvoie le code retour de ecrireGraph qui aura cree ou non le fichier .dot
 	}
 	else
 	// Sinon, affichage des dix pages les plus consultees
@@ -143,7 +150,7 @@ Application::Application ( const Application & uneApplication ) :
 
 Application::Application ( string fichierIn, Uint16 f ) :
 	fichierEntree( fichierIn ), graph( ), flags( f )
-// Algorithme :
+// Algorithme :	Instanciation a partir des constructeurs de string, map et Uint16 (uint16_t).
 //
 {
 #ifdef MAP
@@ -154,12 +161,13 @@ Application::Application ( string fichierIn, Uint16 f ) :
 
 
 Application::~Application ( )
-// Algorithme :
-//
+// Algorithme :	Liberation memoire. Rien de particulier a faire, les destructeurs de tout
+//				les elements feront parfaitement leur travail.
 {
 #ifdef MAP
     cout << "Appel au destructeur de <Application>" << endl;
 #endif
+	// Pas d'allocation dynamique.
 
 }	//----- Fin de ~Application
 
@@ -175,28 +183,142 @@ int Application::ecrireGraph ( )
 }	//----- Fin de ecrireGraph
 
 void Application::afficherResultats ( )
-// Algorithme :
+// Algorithme :	Parcours sequentiel du graph :
+//				Pour chaque noeud, on calcul le nombre total de fois ou on a accede a celui-ci en additionnant
+//				le nombre d'acces de chaque arc (=Requete.nombreAcces).
+//				Si on n'a pas encore atteint le nombre de resultats souhaite, on insere le noeud dans une std::list
+//				sans se poser de questions (list permet un tri plus rapide que vector).
+//				Sinon, on tri la liste par ordre decroissant (grace au foncteur ComparaisonAccesPages) du nombre
+//				d'acces total, et si il s'avere que le nombre d'acces total au noeud courant est superieur a celui
+//				du dernier element de la liste, on l'insere eu queue, on retri la liste, et on supprime le dernier
+//				element.
+//				Lorsqu'on a parcouru tout les noeuds, on trie la liste uniquement si elle n'a pas ete triee
+//				(= si on n'a jamais atteint le nombre de resultats souhaites), puis on affiche les urls de chacune
+//				des pages qui la compose, ainsi que le nombre d'acces fait a chaque page.
+// Complexite :	O(n*m), mais m est en general tres petit.
+//				De plus, cette operation n'est realisee qu'une seule et unique fois par appel a Run(),
+//				et seulement si le flag DRAW_GRAPH n'est pas present.
+//				Si on avait trie notre map (= graph) par le nombre d'acces fait a chaque noeud, cette operation
+//				aurait ete en O(1), mais les autres operations (recherche, insertion) auraient ete
+//				plus longues et moins pertinentes : il est plus evident de trier les PageInternets par leur url,
+//				fixe, que par le nombre d'acces, qui varie tout au long de l'application (parcours du fichier de logs).
+//				Cette variation aurait meme certainement introduit des dysfonctionnements.
 {
-	// TODO : implanter le code de recherche et d'affichage des pages les plus consultees
+	const int NOMBRE_RESULTATS = 10;		// Si un jour on veut en afficher +/-, il suffit de changer ici
+	MeilleuresPages meilleursResultats;
 
-}	//----- Fin de remplirRequetes
+	// Parcours du graph pour trouver les dix pages les plus consultees
+	for ( IterateurGraph itg = graph.begin(); itg != graph.end(); itg++ )
+	{
+		// Déclarations variables pour plus de praticite
+		int i = 0;
+		int taille = itg->second.size();
+		int nombreAcces = itg->second[i].GetNombreAcces( );
+
+		int somme = 0;
+		// Calcul du nombre total d'acces
+		while ( i++ < taille )
+		{
+			somme += nombreAcces;
+		}
+
+		// Si on n'a pas encore le nombre maximum de resultats, insertion
+		if ( meilleursResultats.size( ) < NOMBRE_RESULTATS )
+		{
+			meilleursResultats.push_back( AccesPage( itg->second[i].GetPageInternet( ), nombreAcces ) );
+		}
+		// Sinon, on verifie que c'est un actuel meilleur resultat
+		else
+		{
+			meilleursResultats.sort( ComparaisonAccesPages( ) );
+
+			// Si c'est une des NOMBRE_RESULTATS pages les plus consultees (strictement), insertion
+			if ( nombreAcces > meilleursResultats.rbegin()->second )
+			{
+				// On l'ajoute
+				meilleursResultats.push_back( AccesPage( itg->second[i].GetPageInternet( ), nombreAcces ) );
+				// On retri (tres rapide)
+				meilleursResultats.sort( ComparaisonAccesPages( ) );
+				// On supprime le dernier
+				meilleursResultats.pop_back( );
+			}
+		}	//----- Fin de if ( meilleursResultats.size( ) < NOMBRE_RESULTATS ) else
+	}	//----- Fin de for (IterateurGraph)
+
+	// Si il y a moins de NOMBRE_RESULTATS noeuds, la structure de resultats n'est pas triee
+	if ( meilleursResultats.size() < NOMBRE_RESULTATS )
+	{
+		meilleursResultats.sort( ComparaisonAccesPages( ) );	// On trie
+	}
+
+	// Affichage
+	for ( IterateurMeilleuresPages itmp = meilleursResultats.begin( ); itmp != meilleursResultats.end( ); itmp ++ )
+	{
+		cout << itmp->first->GetOutputComplet( ) << ends << itmp->second << endl;
+	}
+
+}	//----- Fin de afficherResultats
 
 void Application::remplirGraph ( const string& requete, const string& requeteur )
-// Algorithme :
-// TODO : mettre une retour
+// Algorithme :	Pour le moment, les requeteur d'un type indesirable sont geres comme suit :
+//				On insere a leur place une Requete avec un pointeur vers une PageInternet
+//				qui a l'url "Autre Type Requeteur".
+//				La page requetrice sera inseree en tant que noeud sauf si elle est d'un type
+//				qui doit être exclu de l'analyse.
+// TODO : mettre un retour
 {
-	PageInternet p( requete );
+	const string STR_REQUETEUR_EXCLU = "Autre Type Requeteur";
+	Arcs::iterator ita;
+	PageInternet pageRequete( requete );
+	PageInternet pageRequetrice( requeteur );
+
+	// Si le flag de l'option -e est present, on verifie que les deux PageInternets sont du bon type
 	if ( ( flags & E_OPTION ) == E_OPTION )
 	{
-		if( IMAGE.find( p.GetType( ) ) != string::npos || SCRIPT.find( p.GetType( ) ) != string::npos )
+		if ( IMAGE.find( pageRequete.GetType( ) ) != string::npos
+			|| SCRIPT.find( pageRequete.GetType( ) ) != string::npos )
 		{
 			return;		// On ne traite pas la ligne
 		}
+		if ( IMAGE.find( pageRequete.GetType( ) ) != string::npos
+			|| SCRIPT.find( pageRequete.GetType( ) ) != string::npos )
+		{
+			pageRequetrice = PageInternet ( STR_REQUETEUR_EXCLU );
+		}
 	}
 
-	// Insertion
+	// Si la page d'url requete n'est pas encore presente en tant que noeud
+	if ( graph.find( pageRequete ) == graph.end( ) )
+	{		
+		// Insertion de la clef
+		Arcs & arcs = graph[pageRequete];	// NB :	On cree une reference en meme temps pour eviter
+											//		de refaire la recherche dans graph a chaque fois,
+											//		meme si celle-ci se fait en O(log2(n))
 
-	// TODO : implanter le code d'insertion dans le dico de requetes
+		// Que le requeteur soit d'un type indesirable ou non, c'est le meme algorithme d'insertion
+		ita = find( arcs.begin( ), arcs.end( ), Requete( &pageRequetrice ) );
+
+		// Si le requeteur n'est pas present dans le vecteur d'arcs
+		if ( ita == arcs.end( ) )
+		{
+			arcs.push_back( Requete( &pageRequetrice ) );	// On l'insere
+		}
+		else
+		{
+			ita->IncrementeNombreAcces( );
+		}
+		
+	}	//----- Fin de if (pageRequete est deja un noeud)
+
+	// Si la page d'url requeteur est du bon type
+	if ( pageRequetrice.GetOutputComplet( ) != STR_REQUETEUR_EXCLU )
+	{
+		// Si elle n'est pas encore presente en tant que noeud
+		if ( graph.find( pageRequetrice ) == graph.end( ) )
+		{
+			graph[pageRequetrice];	// On l'insere
+		}
+	}
 
 }	//----- Fin de remplirGraph
 

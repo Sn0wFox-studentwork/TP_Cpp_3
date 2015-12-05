@@ -19,9 +19,9 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 #include "Requete.h"
 
 //------------------------------------------------------------------ Types
-typedef uint16_t Uint16;							// Type des flags (options)
-typedef std::vector<Requete> Arcs;						// 
-typedef std::map<PageInternet, Arcs> Graph;			// Map de [noeuds, liens] (=[PageInternet, Ensemble des autres Page la referencant])
+typedef uint16_t Uint16;							// Type des flags (= options)
+typedef std::vector<Requete> Arcs;					// Type des liens
+typedef std::map<PageInternet, Arcs> Graph;			// Map de [noeud, liens vers noeud] (=[PageInternet, Ensemble des autres Page la referencant])
 typedef Graph::iterator IterateurGraph;				// Iterateur pour map de requete
 
 //------------------------------------------------------------- Constantes
@@ -57,10 +57,9 @@ public:
 	//
 
 	void SetFlags ( Uint16 newFlags );
-	// Mode d'emploi :
-	//
-	// Contrat :
-	//
+	// Mode d'emploi :	Remplace les options de l'application par ceux definis par newFlags.
+	// Contrat :		L'utilisateur doit uniquement utiliser les flags existants,
+	//					qui sont definis dans Application.h.
 
 
 //------------------------------------------------- Surcharge d'opérateurs
