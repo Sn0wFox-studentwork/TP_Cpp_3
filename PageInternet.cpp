@@ -50,7 +50,7 @@ std::string PageInternet::GetRacine() const
         {
             if( url[tampon+1]=='/' )//on evite de s'arreter au // de http://
             {
-                if(url.substr(tampon+2).find("/") != 2)
+                if(url.substr(tampon+2).find("/") != string::npos)
                 {
                     tampon = url.substr(tampon+2).find("/");
                     racine = url.substr(0,tampon);
