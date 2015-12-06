@@ -1,0 +1,40 @@
+# depslib dependency file v1.0
+1449429511 source:c:\users\simon\documents\github\tp_cpp_3\application.cpp
+	<iostream>
+	<fstream>
+	<algorithm>
+	<list>
+	"Application.h"
+
+1449415916 c:\users\simon\documents\github\tp_cpp_3\application.h
+	<map>
+	<string>
+	<fstream>
+	<vector>
+	"PageInternet.h"
+	"Requete.h"
+
+1449413971 c:\users\simon\documents\github\tp_cpp_3\pageinternet.h
+	<string>
+
+1449401335 c:\users\simon\documents\github\tp_cpp_3\requete.h
+	<string>
+	"PageInternet.h"
+
+1449401335 source:c:\users\simon\documents\github\tp_cpp_3\main.cpp
+	<iostream>
+	<string>
+	<cstdlib>
+	<cstddef>
+	<algorithm>
+	<list>
+	"Application.h"
+
+1449401652 source:c:\users\simon\documents\github\tp_cpp_3\pageinternet.cpp
+	<iostream>
+	"PageInternet.h"
+
+1449401335 source:c:\users\simon\documents\github\tp_cpp_3\requete.cpp
+	<iostream>
+	"Requete.h"
+

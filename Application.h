@@ -35,12 +35,12 @@ const Uint16 E_OPTION	=		NO_IMAGE | NO_SCRIPT;				// Exclure scripts et images [
 const Uint16 ONE_HOUR	=		0x1000;								// Pour une heure precise [-t]
 const Uint16 ALL_FLAGS	=		DRAW_GRAPH | E_OPTION | ONE_HOUR;	// Toutes les options precedentes
 
-//------------------------------------------------------------------------ 
+//------------------------------------------------------------------------
 // Rôle de la classe <Application>
 // La classe Application gere le fonctionnement global de l'application Analog.
-// 
 //
-//------------------------------------------------------------------------ 
+//
+//------------------------------------------------------------------------
 
 class Application
 {
@@ -89,11 +89,11 @@ public:
 	// Contrat :
 	//
 
-//------------------------------------------------------------------ PRIVE 
+//------------------------------------------------------------------ PRIVE
 
 protected:
 //----------------------------------------------------- Méthodes protégées
-	int ecrireGraph ( );
+	int ecrireGraph ( std::string filename );
 	// Mode d'emploi :	Retourne 0 si le graph a pu etre ecrit,
 	//					-1002 sinon.
 	//

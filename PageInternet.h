@@ -67,6 +67,10 @@ public:
     // Contrat :
     //
 
+    bool GetEstIsole() const {return estIsole;}
+    //getter simple
+    void SetEstIsole(bool value) {estIsole = value;}
+
 //------------------------------------------------- Surcharge d'opérateurs
     PageInternet& operator = ( const PageInternet& unePageInternet );
     // Mode d'emploi : donne une url similaire mais garde la différence d'identifiants
@@ -78,7 +82,7 @@ public:
     //
     // Contrat :
     //
-    
+
     bool operator== ( const PageInternet& unePageInternet ) const;
     // Mode d'emploi :
     //

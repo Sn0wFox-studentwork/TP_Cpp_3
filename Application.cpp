@@ -60,7 +60,7 @@ int Application::Run ( int heure, const string& nomGraph )
 		cerr << "Fichier d'entree " + fichierEntree + " introuvable." << endl;
 		return -1001;
 	}
-	
+
 	// Lecture du fichier et remplissage du graph
 	while ( getline ( fichier, lecture ) )		// Tant qu'il y a des lignes a lire
 	{
@@ -98,7 +98,7 @@ int Application::Run ( int heure, const string& nomGraph )
 	// Ecriture du graphe sur le disque au format .dot si l'option a ete specifiee
 	if ( ( flags & DRAW_GRAPH ) == DRAW_GRAPH )
 	{
-		return ecrireGraph( );		// On renvoie le code retour de ecrireGraph qui aura cree ou non le fichier .dot
+		return ecrireGraph( "placeholder" );		// On renvoie le code retour de ecrireGraph qui aura cree ou non le fichier .dot
 	}
 	else
 	// Sinon, affichage des dix pages les plus consultees
@@ -174,11 +174,45 @@ Application::~Application ( )
 //------------------------------------------------------------------ PRIVE
 
 //----------------------------------------------------- Méthodes protégées
-int Application::ecrireGraph ( )
+int Application::ecrireGraph (std::string filename )
 // Algorithme :
 {
 	// TODO :	implanter l'ecriture du graph
-	return 0;
+	// Declaration des variables
+    ofstream fichierGraphe;
+    IterateurGraph iteGraphe;
+    Arcs::iterator iteArc;
+    // Ouverture du fichier et ecriture des lignes d'en-tête qui ne dependent pas du graphe
+    fichierGraphe.open(filename);
+    if ( fichierGraphe.is_open() )
+    {
+        fichierGraphe<<"//Fichier "<< filename<< "\n\n\n\n";
+        fichierGraphe<<"digraph {\n";
+        // Ecriture des lignes propres au graphe
+        for ( iteGraphe = graph.begin(); iteGraphe != graph.end(); iteGraphe++ )
+        {
+            // ecriture du noeud
+            fichierGraphe<< "\t"<<iteGraphe->first.GetOutputComplet();
+            if(iteGraphe->first.GetEstIsole() == true)
+            {
+                fichierGraphe << "[label = " << iteGraphe->first.GetOutputExt() << "]";
+            }
+            fichierGraphe<< ";\n";
+            // ecriture des aretes
+            for ( iteArc = iteGraphe->second.begin(); iteArc != iteGraphe->second.end(); iteArc++ )
+            {
+                fichierGraphe << iteArc->GetPageInternet()->GetOutputComplet() << " -> ";
+                fichierGraphe << iteGraphe->first.GetOutputComplet();
+                fichierGraphe << " [label = " << iteArc->GetNombreAcces() << "];\n";
+            }
+        }
+
+
+        // pied de page -> ne depend pas du graphe
+        fichierGraphe<<"}";
+        fichierGraphe.close();
+        return 0;
+    }
 	return -1002;		// En cas d'erreur lors de l'ecriture
 }	//----- Fin de ecrireGraph
 
@@ -289,7 +323,7 @@ void Application::remplirGraph ( const string& requete, const string& requeteur 
 
 	// Si la page d'url requete n'est pas encore presente en tant que noeud
 	if ( graph.find( pageRequete ) == graph.end( ) )
-	{		
+	{
 		// Insertion de la clef
 		Arcs & arcs = graph[pageRequete];	// NB :	On cree une reference en meme temps pour eviter
 											//		de refaire la recherche dans graph a chaque fois,
@@ -307,7 +341,7 @@ void Application::remplirGraph ( const string& requete, const string& requeteur 
 		{
 			ita->IncrementeNombreAcces( );
 		}
-		
+
 	}	//----- Fin de if (pageRequete est deja un noeud)
 
 	// Si la page d'url requeteur est du bon type

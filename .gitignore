@@ -52,3 +52,5 @@ SClasseG.cpp
 SClasseG.h
 *.o
 PageInternet.exe
+*.exe
+testmaintp3.cbp
