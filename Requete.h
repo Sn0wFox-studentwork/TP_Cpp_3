@@ -44,7 +44,7 @@ public:
 	// Contrat :
 	//
 
-	void IncrementeNombreAcces ( ) { nombreAcces++ ; }
+	void IncrementeNombreAcces ( ) { ++nombreAcces ; }
 
 //------------------------------------------------- Surcharge d'opérateurs
 	Requete &operator = ( const Requete& uneRequete );

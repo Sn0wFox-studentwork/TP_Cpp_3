@@ -174,7 +174,7 @@ PageInternet & PageInternet::operator= ( const PageInternet & unePageInternet )
 //				on "copie" tout les champs :
 //				on les modifie pour qu'ils soient comme ceux de unePageInternet.
 {
-	if ( this != &unePageInternet)
+	if ( this != &unePageInternet )
 	{
 		url = unePageInternet.url;
 		estIsole = unePageInternet.estIsole;
@@ -197,8 +197,8 @@ bool PageInternet::operator== ( const PageInternet& unePageInternet ) const
 
 //-------------------------------------------- Constructeurs - destructeur
 PageInternet::PageInternet ( const PageInternet & unePageInternet ) :
-				url(unePageInternet.url),
-				estIsole(unePageInternet.estIsole)
+				url( unePageInternet.url ),
+				estIsole( unePageInternet.estIsole )
 // Algorithme :
 {
 #ifdef MAP

@@ -15,6 +15,9 @@ void TestFlags( );
 void TestFind( );
 void TestTri( );
 void TestGraph( );
+void TestFichier( );
+void TestPrintGraph( );
+void TestList( );
 
 typedef pair<PageInternet*, int> AccesPage;
 typedef list<AccesPage> MeilleuresPages;
@@ -48,6 +51,9 @@ int main ( unsigned int argc, char** argv )
 	TestFlags( );
 	TestFind( );
 	TestTri( );
+	TestFichier( );
+	TestPrintGraph( );
+	TestList( );
 	
 	// Recuperation des parametres
 	if ( argc < 2 )
@@ -104,7 +110,7 @@ int main ( unsigned int argc, char** argv )
 	Application app( nomFichierEntree, flags );
 
 	// Lancement du traitement puis fin du programme : on retourne la valeur retournee par Run
-	return app.Run( strtol( heure.c_str( ), nullptr, 0 ), nomGraph );
+	return app.Run( nomGraph, strtol( heure.c_str( ), nullptr, 0 ) );
 
 }
 
@@ -235,5 +241,38 @@ void TestGraph ( )
 
 	cout << "g[p3][0].GetPageInternet->GetOutputComplet() via ref : "
 		<< a[0].GetPageInternet()->GetOutputComplet() << endl;
+}
 
+void TestFichier ( )
+{
+	ifstream fichier("C:\\Users\\Ruben\\Documents\\Cours\\3A\\TP_TD\\TP_Cpp\\TP3_cpp\\anonyme.log", ios::in);
+	string lecture;
+	getline( fichier,lecture );
+	cout << lecture << endl;
+}
+
+void TestPrintGraph()
+{
+	string fichier("C:\\Users\\Ruben\\Documents\\Cours\\3A\\TP_TD\\TP_Cpp\\TP3_cpp\\anonyme2.log");
+	string lecture;
+	Application app(fichier, NO_FLAGS);
+	cout << app.Run();
+	//app.printGraph();
+
+}
+
+void TestList()
+{
+	list<char> l;
+	l.push_back('a');
+	l.push_back('b');
+	l.push_back('c');
+
+	list<char>::iterator it = l.begin();
+
+	while (it != l.end())
+	{
+		cout << *it << endl;
+		it++;
+	}
 }

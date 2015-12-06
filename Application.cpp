@@ -41,19 +41,36 @@ struct ComparaisonAccesPages
 
 //----------------------------------------------------- Méthodes publiques
 
-int Application::Run ( int heure, const string& nomGraph )
-// Algorithme :
+int Application::Run ( const string& nomGraph, int heure )
+// Algorithme :	On tente d'ouvrir le fichier en lecture, sans quoi on termine la methode avec le code -1001.
+//				On commence ensuite a parser le fichier, requete par requete :
+//				On recupere l'heure a laquelle la requete a ete faite, et on choisi de conserver ou d'exclure
+//				cette requete de l'analyse suivant si le flag ONE_HOUR est present et si c'est l'heure qu'on recherche.
+//				On recupere ensuite le type de la requete ; s'il ne s'agit pas d'une requete de type GET, on saute la
+//				ligne. Sinon, on recupere les urls du requeteur et du requete qu'on complete eventuellement pour
+//				qu'elles soient absolues, puis on rempli notre structure de graph.
+//				C'est la methode remplirGraph qui pour l'instant gere l'option -e.
+//				Une fois le fichier analyse, si le flag DRAW_GRAPH est present, on ecrit le graph sur le disque via
+//				la methode ecrireGraph, dont on retourne le code de retour pour terminer la methode. Sinon,
+//				on affiche les 10 pages les plus cnosultees et on retourne le code 0.
+// TODO :	Gerer le flag E_OPTION ici ? Ca serait plus propre.
+// TODO :	Passer le nombre de resultats souhaites en parametre de afficherResultats ? + de reutilisabilite p-e
+// NB :		L'url du requeteur ne peut jamais etre relative. Elle ne peut etre qu'absolue ou nulle, c'est a dire "-".
+// Cas limite :	navigation dans un onglet, ouverture d'un second onglet puis navigation, puis retour dans le
+//				premier onglet et acces direct a une page relative (via frappe, signet ou autre).
 {
 	// Declarations des variables de traitement
 	ifstream fichier(fichierEntree, ios::in);
+	string racine = "http://google.com";		// Racine initiale par defaut
 	string lecture;
 	string tamponRequete;
 	string tamponRequeteur;
 	size_t posTampon;
 	const string STR_GET = string( "GET" );
-	const size_t SIZE_STR_GET = STR_GET.length();
+	const string STR_DOUBLEQUOTE = string( "\"" );
+	const size_t SIZE_STR_GET = STR_GET.length( );
 
-	// Verification que le fichier ai bien ete ouvert
+	// On verifie que le fichier a bien ete ouvert
 	if ( !fichier )
 	{
 		// Si le fichier n'existe pas (mauvais chemin d'acces), fin de la methode
@@ -78,21 +95,42 @@ int Application::Run ( int heure, const string& nomGraph )
 		}
 		posTampon = lecture.find( STR_GET );
 		// Si il ne s'agit pas d'une requete de type GET, on saute la ligne
-		if ( posTampon != string::npos )
+		if ( posTampon == string::npos )
 		{
 			continue;
 		}
 		tamponRequete = lecture.substr( posTampon + SIZE_STR_GET + 1,
 			lecture.substr( posTampon + SIZE_STR_GET + 1 ).find(" ") );
 			// A partir de la tamponRequete contient l'url a laquelle on a voulu acceder
-		posTampon = lecture.substr( posTampon ).find( "\"" );
-			posTampon = lecture.substr( posTampon ).find( "\"" );
+		lecture = lecture.substr( posTampon );
+		posTampon = lecture.find( STR_DOUBLEQUOTE );
+		lecture = lecture.substr( posTampon + 1 );
+		posTampon = lecture.find( STR_DOUBLEQUOTE );
 			// posTampon arrive au debut de l'url du requeteur
-		tamponRequeteur = lecture.substr( posTampon, lecture.substr( posTampon ).find( "\"" ) );
+		tamponRequeteur = lecture.substr( posTampon + 1, lecture.substr( posTampon + 1 ).find( STR_DOUBLEQUOTE ) );
 			// tamponRequeteur contient l'url du requeteur
+		cout << "Requete : " << tamponRequete << " Requeteur : " << tamponRequeteur << endl;
+
+		PageInternet p1( tamponRequete );
+		PageInternet p2( tamponRequeteur );
+		
+		// Si la requete a une url relative
+		if ( p1.GetRacine( ) == "" )
+		{
+			// Si on dispose de l'url de la page requetrice, on prend sa racine
+			if ( p2.GetRacine( ) != "-" )
+			{
+				racine = p2.GetRacine( );
+				// NB : pas besoin d'inserer "/"
+			}
+
+			// Si le requeteur n'existe pas (url "-"), on prend la racine de la page precedente
+			p1 = PageInternet( racine + tamponRequete );	// On prend la racine du requeteur
+
+		}
 
 		// Remplissage graph
-		remplirGraph( tamponRequete, tamponRequeteur );
+		remplirGraph( p1, p2 );
 	}
 
 	// Ecriture du graphe sur le disque au format .dot si l'option a ete specifiee
@@ -247,19 +285,36 @@ void Application::afficherResultats ( )
 		// Déclarations variables pour plus de praticite
 		int i = 0;
 		int taille = itg->second.size();
-		int nombreAcces = itg->second[i].GetNombreAcces( );
-
 		int somme = 0;
-		// Calcul du nombre total d'acces
-		while ( i++ < taille )
+
+		cout << itg->first.GetOutputComplet() << ends;
+		for (int j = 0; j < itg->second.size(); j++)
 		{
-			somme += nombreAcces;
+			cout << itg->second[j].GetNombreAcces() << ends;
+		}
+		cout << endl;
+
+		// Calcul du nombre total d'acces
+		while ( i < taille )
+		{
+			somme += itg->second[i].GetNombreAcces( );
+			i++;
 		}
 
 		// Si on n'a pas encore le nombre maximum de resultats, insertion
 		if ( meilleursResultats.size( ) < NOMBRE_RESULTATS )
 		{
-			meilleursResultats.push_back( AccesPage( itg->second[i].GetPageInternet( ), nombreAcces ) );
+			PageInternet p(itg->first);		// Sinon le constructeur d'AccesPage plante a cause du const
+			cout << "Resultats incomplets, insertion de " << p.GetOutputComplet() << endl;
+			AccesPage a( &p, somme );
+			meilleursResultats.push_back( a );
+			cout << "Apres insertion :" << endl;
+			IterateurMeilleuresPages itmp = meilleursResultats.begin();
+			while (itmp != meilleursResultats.end())
+			{
+				cout << itmp->first->GetOutputComplet() << endl;
+				itmp++;
+			}
 		}
 		// Sinon, on verifie que c'est un actuel meilleur resultat
 		else
@@ -267,10 +322,11 @@ void Application::afficherResultats ( )
 			meilleursResultats.sort( ComparaisonAccesPages( ) );
 
 			// Si c'est une des NOMBRE_RESULTATS pages les plus consultees (strictement), insertion
-			if ( nombreAcces > meilleursResultats.rbegin()->second )
+			if ( somme > meilleursResultats.rbegin()->second )
 			{
 				// On l'ajoute
-				meilleursResultats.push_back( AccesPage( itg->second[i].GetPageInternet( ), nombreAcces ) );
+				PageInternet p(itg->first);
+				meilleursResultats.push_back( AccesPage( &p, somme ) );
 				// On retri (tres rapide)
 				meilleursResultats.sort( ComparaisonAccesPages( ) );
 				// On supprime le dernier
@@ -293,7 +349,7 @@ void Application::afficherResultats ( )
 
 }	//----- Fin de afficherResultats
 
-void Application::remplirGraph ( const string& requete, const string& requeteur )
+void Application::remplirGraph ( const PageInternet& pageRequete, const PageInternet& pRequetrice )
 // Algorithme :	Pour le moment, les requeteur d'un type indesirable sont geres comme suit :
 //				On insere a leur place une Requete avec un pointeur vers une PageInternet
 //				qui a l'url "Autre Type Requeteur".
@@ -303,8 +359,7 @@ void Application::remplirGraph ( const string& requete, const string& requeteur 
 {
 	const string STR_REQUETEUR_EXCLU = "Autre Type Requeteur";
 	Arcs::iterator ita;
-	PageInternet pageRequete( requete );
-	PageInternet pageRequetrice( requeteur );
+	PageInternet pageRequetrice( pRequetrice );		// Pour manipuler une page requetrice a ne pas analyser
 
 	// Si le flag de l'option -e est present, on verifie que les deux PageInternets sont du bon type
 	if ( ( flags & E_OPTION ) == E_OPTION )

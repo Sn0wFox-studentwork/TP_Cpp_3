@@ -70,7 +70,7 @@ Requete::Requete ( const Requete & uneRequete ) :
 }	//----- Fin de Requete ( constructeur de copie )
 
 
-Requete::Requete ( PageInternet * const pageRequetrice ) : requeteur( nullptr )
+Requete::Requete ( PageInternet * const pageRequetrice ) : requeteur( nullptr ), nombreAcces ( 1 )
 // Algorithme :	Construction par defaut grace au constructeur par defaut de PageInternet.
 {
 #ifdef MAP

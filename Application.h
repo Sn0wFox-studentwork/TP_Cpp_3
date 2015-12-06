@@ -15,6 +15,9 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 #include <fstream>
 #include <vector>
 
+// TODO : remove when release
+#include <iostream>
+
 #include "PageInternet.h"
 #include "Requete.h"
 
@@ -48,7 +51,7 @@ class Application
 
 public:
 //----------------------------------------------------- Méthodes publiques
-	int Run ( int heure = 0, const std::string& nomGraph = "void.dot" );
+	int Run ( const std::string& nomGraph = "void.dot", int heure = 0 );
 	// Mode d'emploi :	Lance l'application en effectuant les traitements definis par flags.
 	//					Retourne 0 si tout c'est bien passe.
 	//					Retourne -100X si erreur, X fonction de l'erreur.
@@ -61,6 +64,21 @@ public:
 	// Contrat :		L'utilisateur doit uniquement utiliser les flags existants,
 	//					qui sont definis dans Application.h.
 
+	// TODO : remove when release (debug only)
+	void printGraph()
+	{
+		std::cout << "i'm in !" << std::endl;
+		std::cout << graph.size() << std::endl;
+		for (IterateurGraph it = graph.begin(); it != graph.end(); it++)
+		{
+			std::cout << "Noeud : " << it->first.GetOutputComplet() << std::ends << "Arcs : ";
+			for (int i = 0; i < it->second.size(); i++)
+			{
+				std::cout << it->second[i].GetPageInternet()->GetOutputComplet() << std::ends;
+			}
+			std::cout << std::endl;
+		}
+	}
 
 //------------------------------------------------- Surcharge d'opérateurs
 	Application& operator = ( const Application &uneApplication );
@@ -106,7 +124,7 @@ protected:
 	// Contrat :
 	//
 
-	void remplirGraph ( const std::string& requete, const std::string& requeteur );
+	void remplirGraph ( const PageInternet& pageRequete, const PageInternet& pageRequetrice );
 	// Mode d'emploi :
 	//
 	// Contrat :
