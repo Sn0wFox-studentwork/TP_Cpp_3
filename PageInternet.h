@@ -67,9 +67,11 @@ public:
     // Contrat :
     //
 
-    bool GetEstIsole() const {return estIsole;}
+	std::string GetUrl ( ) const { return url; }
+
+    bool GetEstIsole( ) const { return estIsole; }
     //getter simple
-    void SetEstIsole(bool value) {estIsole = value;}
+    void SetEstIsole( bool value ) { estIsole = value; }
 
 //------------------------------------------------- Surcharge d'opérateurs
     PageInternet& operator = ( const PageInternet& unePageInternet );

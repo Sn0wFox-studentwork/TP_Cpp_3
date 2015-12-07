@@ -24,7 +24,7 @@ using namespace std;
 //---------------------------------------------------- Variables de classe
 
 //----------------------------------------------------------- Types privés
-typedef pair<PageInternet*, int> AccesPage;
+typedef pair<PageInternet, int> AccesPage;
 typedef list<AccesPage> MeilleuresPages;
 typedef MeilleuresPages::iterator IterateurMeilleuresPages;
 
@@ -215,7 +215,6 @@ Application::~Application ( )
 int Application::ecrireGraph (std::string filename )
 // Algorithme :
 {
-	// TODO :	implanter l'ecriture du graph
 	// Declaration des variables
     ofstream fichierGraphe;
     IterateurGraph iteGraphe;
@@ -244,7 +243,6 @@ int Application::ecrireGraph (std::string filename )
                 fichierGraphe << " [label = " << iteArc->GetNombreAcces() << "];\n";
             }
         }
-
 
         // pied de page -> ne depend pas du graphe
         fichierGraphe<<"}";
@@ -284,37 +282,20 @@ void Application::afficherResultats ( )
 	{
 		// Déclarations variables pour plus de praticite
 		int i = 0;
-		int taille = itg->second.size();
-		int somme = 0;
-
-		cout << itg->first.GetOutputComplet() << ends;
-		for (int j = 0; j < itg->second.size(); j++)
-		{
-			cout << itg->second[j].GetNombreAcces() << ends;
-		}
-		cout << endl;
+		int tailleArcs = itg->second.size();
+		int nbTotalAcces = 0;
 
 		// Calcul du nombre total d'acces
-		while ( i < taille )
+		while ( i < tailleArcs )
 		{
-			somme += itg->second[i].GetNombreAcces( );
+			nbTotalAcces += itg->second[i].GetNombreAcces( );
 			i++;
 		}
 
 		// Si on n'a pas encore le nombre maximum de resultats, insertion
 		if ( meilleursResultats.size( ) < NOMBRE_RESULTATS )
 		{
-			PageInternet p(itg->first);		// Sinon le constructeur d'AccesPage plante a cause du const
-			cout << "Resultats incomplets, insertion de " << p.GetOutputComplet() << endl;
-			AccesPage a( &p, somme );
-			meilleursResultats.push_back( a );
-			cout << "Apres insertion :" << endl;
-			IterateurMeilleuresPages itmp = meilleursResultats.begin();
-			while (itmp != meilleursResultats.end())
-			{
-				cout << itmp->first->GetOutputComplet() << endl;
-				itmp++;
-			}
+			meilleursResultats.push_back( AccesPage( PageInternet( itg->first ), nbTotalAcces ) );
 		}
 		// Sinon, on verifie que c'est un actuel meilleur resultat
 		else
@@ -322,11 +303,11 @@ void Application::afficherResultats ( )
 			meilleursResultats.sort( ComparaisonAccesPages( ) );
 
 			// Si c'est une des NOMBRE_RESULTATS pages les plus consultees (strictement), insertion
-			if ( somme > meilleursResultats.rbegin()->second )
+			if ( nbTotalAcces > meilleursResultats.rbegin()->second )
 			{
 				// On l'ajoute
-				PageInternet p(itg->first);
-				meilleursResultats.push_back( AccesPage( &p, somme ) );
+				PageInternet p( itg->first );
+				meilleursResultats.push_back( AccesPage( p, nbTotalAcces ) );
 				// On retri (tres rapide)
 				meilleursResultats.sort( ComparaisonAccesPages( ) );
 				// On supprime le dernier
@@ -344,7 +325,7 @@ void Application::afficherResultats ( )
 	// Affichage
 	for ( IterateurMeilleuresPages itmp = meilleursResultats.begin( ); itmp != meilleursResultats.end( ); itmp ++ )
 	{
-		cout << itmp->first->GetOutputComplet( ) << ends << itmp->second << endl;
+		cout << itmp->first.GetUrl() << ends << itmp->second << endl;
 	}
 
 }	//----- Fin de afficherResultats
@@ -369,44 +350,41 @@ void Application::remplirGraph ( const PageInternet& pageRequete, const PageInte
 		{
 			return;		// On ne traite pas la ligne
 		}
-		if ( IMAGE.find( pageRequete.GetType( ) ) != string::npos
-			|| SCRIPT.find( pageRequete.GetType( ) ) != string::npos )
+		if ( IMAGE.find( pRequetrice.GetType( ) ) != string::npos
+			|| SCRIPT.find( pRequetrice.GetType( ) ) != string::npos )
 		{
 			pageRequetrice = PageInternet ( STR_REQUETEUR_EXCLU );
 		}
 	}
 
-	// Si la page d'url requete n'est pas encore presente en tant que noeud
-	if ( graph.find( pageRequete ) == graph.end( ) )
+	// Que la page d'url requete soit presente en tant que noeud ou pas, le code reste inchange
+	// Il en va de même pour l'exclusion ou non de la page requetrice
+	
+	Arcs & arcs = graph[pageRequete];	// NB :	Soit la page existe en tant que noeud, 
+										//		auquel cas on creee juste une reference,
+										//		soit elle n'existe pas,
+										//		auquel cas elle est insere et on cree une reference.
+										//		Cette reference permet de ne pas refaire la rechrche dans la map
+										//		a chaque fois, bien qu'en O(log2(n))
+
+	// Que le requeteur soit d'un type indesirable ou non, c'est le meme algorithme d'insertion
+	ita = find( arcs.begin( ), arcs.end( ), Requete( &pageRequetrice ) );
+
+	// Si le requeteur n'est pas present dans le vecteur d'arcs
+	if ( ita == arcs.end( ) )
 	{
-		// Insertion de la clef
-		Arcs & arcs = graph[pageRequete];	// NB :	On cree une reference en meme temps pour eviter
-											//		de refaire la recherche dans graph a chaque fois,
-											//		meme si celle-ci se fait en O(log2(n))
-
-		// Que le requeteur soit d'un type indesirable ou non, c'est le meme algorithme d'insertion
-		ita = find( arcs.begin( ), arcs.end( ), Requete( &pageRequetrice ) );
-
-		// Si le requeteur n'est pas present dans le vecteur d'arcs
-		if ( ita == arcs.end( ) )
-		{
-			arcs.push_back( Requete( &pageRequetrice ) );	// On l'insere
-		}
-		else
-		{
-			ita->IncrementeNombreAcces( );
-		}
-
-	}	//----- Fin de if (pageRequete est deja un noeud)
+		arcs.push_back( Requete( &pageRequetrice ) );	// On l'insere
+	}
+	else
+	{
+		ita->IncrementeNombreAcces( );
+	}
 
 	// Si la page d'url requeteur est du bon type
-	if ( pageRequetrice.GetOutputComplet( ) != STR_REQUETEUR_EXCLU )
+	if ( pageRequetrice.GetUrl( ) != STR_REQUETEUR_EXCLU )
 	{
-		// Si elle n'est pas encore presente en tant que noeud
-		if ( graph.find( pageRequetrice ) == graph.end( ) )
-		{
-			graph[pageRequetrice];	// On l'insere
-		}
+		graph[pageRequetrice];	// On l'insere si elle n'est pas presente en tant que noeud,
+								// sinon rien ne se passe.
 	}
 
 }	//----- Fin de remplirGraph

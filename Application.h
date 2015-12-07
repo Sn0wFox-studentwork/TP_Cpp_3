@@ -64,22 +64,6 @@ public:
 	// Contrat :		L'utilisateur doit uniquement utiliser les flags existants,
 	//					qui sont definis dans Application.h.
 
-	// TODO : remove when release (debug only)
-	void printGraph()
-	{
-		std::cout << "i'm in !" << std::endl;
-		std::cout << graph.size() << std::endl;
-		for (IterateurGraph it = graph.begin(); it != graph.end(); it++)
-		{
-			std::cout << "Noeud : " << it->first.GetOutputComplet() << std::ends << "Arcs : ";
-			for (int i = 0; i < it->second.size(); i++)
-			{
-				std::cout << it->second[i].GetPageInternet()->GetOutputComplet() << std::ends;
-			}
-			std::cout << std::endl;
-		}
-	}
-
 //------------------------------------------------- Surcharge d'opérateurs
 	Application& operator = ( const Application &uneApplication );
 	// Mode d'emploi :

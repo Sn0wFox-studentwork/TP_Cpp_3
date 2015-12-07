@@ -17,9 +17,8 @@ void TestTri( );
 void TestGraph( );
 void TestFichier( );
 void TestPrintGraph( );
-void TestList( );
 
-typedef pair<PageInternet*, int> AccesPage;
+typedef pair<PageInternet, int> AccesPage;
 typedef list<AccesPage> MeilleuresPages;
 typedef MeilleuresPages::iterator IterateurMeilleuresPages;
 
@@ -53,7 +52,6 @@ int main ( unsigned int argc, char** argv )
 	TestTri( );
 	TestFichier( );
 	TestPrintGraph( );
-	TestList( );
 	
 	// Recuperation des parametres
 	if ( argc < 2 )
@@ -201,21 +199,20 @@ void TestTri ( )
 	PageInternet p2("page2.html");
 	PageInternet p3("page3.html");
 	MeilleuresPages mp;
-	mp.push_back( AccesPage( &p1, 7 ) );
-	mp.push_back( AccesPage( &p2, 9 ) );
-	mp.push_back( AccesPage( &p3, 3 ) );
-	ComparaisonAccesPages c;
+	mp.push_back( AccesPage( p1, 7 ) );
+	mp.push_back( AccesPage( p2, 9 ) );
+	mp.push_back( AccesPage( p3, 3 ) );
 
 	for ( IterateurMeilleuresPages i = mp.begin(); i != mp.end(); i++ )
 	{
-		cout << i->first->GetOutputComplet() << ends << i->second << endl;
+		cout << i->first.GetOutputComplet() << ends << i->second << endl;
 	}
 
 	mp.sort( ComparaisonAccesPages( ) );
 
 	for ( IterateurMeilleuresPages i = mp.begin(); i != mp.end(); i++ )
 	{
-		cout << i->first->GetOutputComplet( ) << ends << i->second << endl;
+		cout << i->first.GetOutputComplet( ) << ends << i->second << endl;
 	}
 }
 
@@ -245,7 +242,7 @@ void TestGraph ( )
 
 void TestFichier ( )
 {
-	ifstream fichier("C:\\Users\\Ruben\\Documents\\Cours\\3A\\TP_TD\\TP_Cpp\\TP3_cpp\\anonyme.log", ios::in);
+	ifstream fichier("anonyme2.log", ios::in);
 	string lecture;
 	getline( fichier,lecture );
 	cout << lecture << endl;
@@ -253,26 +250,9 @@ void TestFichier ( )
 
 void TestPrintGraph()
 {
-	string fichier("C:\\Users\\Ruben\\Documents\\Cours\\3A\\TP_TD\\TP_Cpp\\TP3_cpp\\anonyme2.log");
+	string fichier("anonyme2.log");
 	string lecture;
 	Application app(fichier, NO_FLAGS);
 	cout << app.Run();
-	//app.printGraph();
 
-}
-
-void TestList()
-{
-	list<char> l;
-	l.push_back('a');
-	l.push_back('b');
-	l.push_back('c');
-
-	list<char>::iterator it = l.begin();
-
-	while (it != l.end())
-	{
-		cout << *it << endl;
-		it++;
-	}
 }
