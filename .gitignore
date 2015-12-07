@@ -43,7 +43,6 @@ Temporary Items
 .apdisk
 *.tlog
 *.obj
-*.log
 *.pdb
 *.vcxproj
 *.idb
@@ -54,3 +53,5 @@ SClasseG.h
 PageInternet.exe
 *.exe
 testmaintp3.cbp
+Debug/TP_Cpp_3.Build.CppClean.log
+Debug/TP_Cpp_3.log

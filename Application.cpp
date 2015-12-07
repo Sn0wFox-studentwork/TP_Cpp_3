@@ -136,7 +136,7 @@ int Application::Run ( const string& nomGraph, int heure )
 	// Ecriture du graphe sur le disque au format .dot si l'option a ete specifiee
 	if ( ( flags & DRAW_GRAPH ) == DRAW_GRAPH )
 	{
-		return ecrireGraph( "placeholder" );		// On renvoie le code retour de ecrireGraph qui aura cree ou non le fichier .dot
+		return ecrireGraph( nomGraph );		// On renvoie le code retour de ecrireGraph qui aura cree ou non le fichier .dot
 	}
 	else
 	// Sinon, affichage des dix pages les plus consultees
@@ -212,7 +212,7 @@ Application::~Application ( )
 //------------------------------------------------------------------ PRIVE
 
 //----------------------------------------------------- Méthodes protégées
-int Application::ecrireGraph (std::string filename )
+int Application::ecrireGraph ( std::string filename )
 // Algorithme :
 {
 	// Declaration des variables
