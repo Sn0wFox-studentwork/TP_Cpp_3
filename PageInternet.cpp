@@ -52,7 +52,7 @@ std::string PageInternet::GetRacine() const
             {
                 if(url.substr(tampon+2).find("/") != string::npos)
                 {
-                    tampon = url.substr(tampon+2).find("/");
+                    tampon = tampon + 2 + url.substr(tampon+2).find("/");
                     racine = url.substr(0,tampon);
                 }
                 else
