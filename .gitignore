@@ -53,5 +53,13 @@ SClasseG.h
 PageInternet.exe
 *.exe
 testmaintp3.cbp
+<<<<<<< HEAD
 Debug/TP_Cpp_3.Build.CppClean.log
 Debug/TP_Cpp_3.log
+=======
+testmaintp3.layout
+testmaintp3.depend
+>>>>>>> origin/master
+testmaintp3.depend
+testmaintp3.depend
+testmaintp3.depend
