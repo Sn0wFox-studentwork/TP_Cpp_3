@@ -14,14 +14,14 @@
 	"PageInternet.h"
 	"Requete.h"
 
-1449413971 c:\users\simon\documents\github\tp_cpp_3\pageinternet.h
+1449490861 c:\users\simon\documents\github\tp_cpp_3\pageinternet.h
 	<string>
 
 1449401335 c:\users\simon\documents\github\tp_cpp_3\requete.h
 	<string>
 	"PageInternet.h"
 
-1449401335 source:c:\users\simon\documents\github\tp_cpp_3\main.cpp
+1449429545 source:c:\users\simon\documents\github\tp_cpp_3\main.cpp
 	<iostream>
 	<string>
 	<cstdlib>

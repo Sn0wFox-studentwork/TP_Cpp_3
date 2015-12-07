@@ -66,6 +66,7 @@ public:
     //
     // Contrat :
     //
+    std::string GetUrl ( ) const { return url; }
 
 	std::string GetUrl ( ) const { return url; }
 
