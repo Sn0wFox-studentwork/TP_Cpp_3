@@ -11,32 +11,31 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 
 //--------------------------------------------------- Interfaces utilisées
 #include <map>
+#include <cstdint>
 #include <string>
 #include <fstream>
 #include <vector>
-
-// TODO : remove when release
 #include <iostream>
 
 #include "PageInternet.h"
-#include "Requete.h"
+#include "Arc.h"
 
 //------------------------------------------------------------------ Types
 typedef uint16_t Uint16;							// Type des flags (= options)
-typedef std::vector<Requete> Arcs;					// Type des liens
-typedef std::map<PageInternet, Arcs> Graph;			// Map de [noeud, liens vers noeud] (=[PageInternet, Ensemble des autres Page la referencant])
-typedef Graph::iterator IterateurGraph;				// Iterateur pour map de requete
+typedef std::vector<Arc> Arcs;					// Type des liens
+typedef std::map<PageInternet, Arcs> Graphe;		// Map de [noeud, liens vers noeud] (=[PageInternet, Ensemble des autres Page la referencant])
+typedef Graphe::iterator IterateurGraph;			// Iterateur pour map de requete
 
 //------------------------------------------------------------- Constantes
 
 // Les constantes suivantes representent les options avec lesquelles on peut lancer l'application :
-const Uint16 NO_FLAGS	=		0x0000;								// Sans option
-const Uint16 DRAW_GRAPH	=		0x0001;								// Dessiner le graphe [-g]
-const Uint16 NO_IMAGE	=		0x0010;								// Exclure les images
-const Uint16 NO_SCRIPT	=		0x0100;								// Eclure les scripts js et css
-const Uint16 E_OPTION	=		NO_IMAGE | NO_SCRIPT;				// Exclure scripts et images [-e]
-const Uint16 ONE_HOUR	=		0x1000;								// Pour une heure precise [-t]
-const Uint16 ALL_FLAGS	=		DRAW_GRAPH | E_OPTION | ONE_HOUR;	// Toutes les options precedentes
+const Uint16 FLAG_NO_FLAGS		=	0x0000;								// Sans option
+const Uint16 FLAG_DRAW_GRAPH	=	0x0001;								// Dessiner le graphe [-g]
+const Uint16 FLAG_NO_IMAGE		=	0x0010;								// Exclure les images
+const Uint16 FLAG_NO_SCRIPT		=	0x0100;								// Eclure les scripts js et css
+const Uint16 FLAG_E_OPTION		=	FLAG_NO_IMAGE | FLAG_NO_SCRIPT;		// Exclure scripts et images [-e]
+const Uint16 FLAG_ONE_HOUR		=	0x1000;								// Pour une heure precise [-t]
+const Uint16 FLAG_ALL_FLAGS		=	FLAG_DRAW_GRAPH | FLAG_E_OPTION | FLAG_ONE_HOUR;	// Toutes les options precedentes
 
 //------------------------------------------------------------------------
 // Rôle de la classe <Application>
@@ -51,13 +50,16 @@ class Application
 
 public:
 //----------------------------------------------------- Méthodes publiques
-	int Run ( const std::string& nomGraph = "void.dot", int heure = 0 );
-	// Mode d'emploi :	Lance l'application en effectuant les traitements definis par flags.
+	int Run ( const std::string& nomGraphe = "void.dot", int heure = 0 );
+	// Mode d'emploi :	Lance l'application en effectuant uniquement les traitements definis par flags.
+	//					Exemple :	Donner en parametre une valeur pour nomGraphe ne fera strictement
+	//								rien si le flag FLAG_DRAW_GRAPH n'est pas present.
+	//					Si le nom du graphe nomGraphe ne comporte pas de ".dot", celui-ci sera ajoute.
 	//					Retourne 0 si tout c'est bien passe.
-	//					Retourne -100X si erreur, X fonction de l'erreur.
-	//					TODO : preciser les autres codes de retour.
-	// Contrat :
-	//
+	//					Retourne -100X si erreur, X fonction de l'erreur :
+	//						1 si le fichier d'entree n'a pas pu etre trouve.
+	//						2 si impossible d'ouvrir le fichier de sortie.
+
 
 	void SetFlags ( Uint16 newFlags );
 	// Mode d'emploi :	Remplace les options de l'application par ceux definis par newFlags.
@@ -79,7 +81,7 @@ public:
 	// Contrat :
 	//
 
-	Application ( std::string fichierEntree, Uint16 flags = NO_FLAGS );
+	Application ( std::string fichierEntree, Uint16 flags = FLAG_NO_FLAGS );
 	// Mode d'emploi :
 	//
 	// Contrat :
@@ -95,7 +97,7 @@ public:
 
 protected:
 //----------------------------------------------------- Méthodes protégées
-	int ecrireGraph ( std::string filename );
+	int ecrireGraph ( const std::string& filename );
 	// Mode d'emploi :	Retourne 0 si le graph a pu etre ecrit,
 	//					-1002 sinon.
 	//
@@ -108,7 +110,7 @@ protected:
 	// Contrat :
 	//
 
-	void remplirGraph ( const PageInternet& pageRequete, const PageInternet& pageRequetrice );
+	void remplirGraph ( const PageInternet& pageArc, const PageInternet& pageRequetrice );
 	// Mode d'emploi :
 	//
 	// Contrat :
@@ -120,7 +122,7 @@ private:
 protected:
 //----------------------------------------------------- Attributs protégés
 	std::string fichierEntree;
-	Graph graph;
+	Graphe graphe;
 	Uint16 flags;
 
 private:

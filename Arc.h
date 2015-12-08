@@ -1,11 +1,11 @@
 /*************************************************************************
-						Requete  -  description
+						Arc  -  description
 -------------------
 début                : 23/11/2015
 copyright            : (C) 2015 par Pericas-Moya & Belletier
 *************************************************************************/
 
-//---------- Interface de la classe <Requete> (fichier requete.h) ------
+//---------- Interface de la classe <Arc> (fichier requete.h) ------
 #if ! defined ( REQUETE_H )
 #define REQUETE_H
 
@@ -19,12 +19,12 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 //------------------------------------------------------------------ Types 
 
 //------------------------------------------------------------------------ 
-// Rôle de la classe <Requete>
+// Rôle de la classe <Arc>
 //
 // 
 //------------------------------------------------------------------------ 
 
-class Requete
+class Arc
 {
 
 //----------------------------------------------------------------- PUBLIC
@@ -47,28 +47,28 @@ public:
 	void IncrementeNombreAcces ( ) { ++nombreAcces ; }
 
 //------------------------------------------------- Surcharge d'opérateurs
-	Requete &operator = ( const Requete& uneRequete );
+	Arc &operator = ( const Arc& uneArc );
 	// Mode d'emploi :
 	//
 	// Contrat :
 	//
 
-	bool operator == ( const Requete& uneRequete ) const;
+	bool operator == ( const Arc& uneArc ) const;
 
 //-------------------------------------------- Constructeurs - destructeur
-	Requete ( const Requete &uneRequete );
+	Arc ( const Arc &uneArc );
 	// Mode d'emploi (constructeur de copie) :
 	//
 	// Contrat :
 	//
 
-	Requete ( PageInternet * const requeteur = nullptr );
+	Arc ( PageInternet * const requeteur = nullptr );
 	// Mode d'emploi :
 	//
 	// Contrat :
 	//
 
-	virtual ~Requete ( );
+	virtual ~Arc ( );
 	// Mode d'emploi :
 	//
 	// Contrat :
@@ -99,6 +99,6 @@ private:
 
 };
 
-//----------------------------------------- Types dépendants de <Requete>
+//----------------------------------------- Types dépendants de <Arc>
 
 #endif // REQUETE_H

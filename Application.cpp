@@ -20,6 +20,7 @@ using namespace std;
 #include "Application.h"
 
 //------------------------------------------------------------- Constantes
+//#define MAP
 
 //---------------------------------------------------- Variables de classe
 
@@ -45,15 +46,15 @@ int Application::Run ( const string& nomGraph, int heure )
 // Algorithme :	On tente d'ouvrir le fichier en lecture, sans quoi on termine la methode avec le code -1001.
 //				On commence ensuite a parser le fichier, requete par requete :
 //				On recupere l'heure a laquelle la requete a ete faite, et on choisi de conserver ou d'exclure
-//				cette requete de l'analyse suivant si le flag ONE_HOUR est present et si c'est l'heure qu'on recherche.
+//				cette requete de l'analyse suivant si le flag FLAG_ONE_HOUR est present et si c'est l'heure qu'on recherche.
 //				On recupere ensuite le type de la requete ; s'il ne s'agit pas d'une requete de type GET, on saute la
 //				ligne. Sinon, on recupere les urls du requeteur et du requete qu'on complete eventuellement pour
 //				qu'elles soient absolues, puis on rempli notre structure de graph.
 //				C'est la methode remplirGraph qui pour l'instant gere l'option -e.
-//				Une fois le fichier analyse, si le flag DRAW_GRAPH est present, on ecrit le graph sur le disque via
+//				Une fois le fichier analyse, si le flag FLAG_DRAW_GRAPH est present, on ecrit le graph sur le disque via
 //				la methode ecrireGraph, dont on retourne le code de retour pour terminer la methode. Sinon,
 //				on affiche les 10 pages les plus cnosultees et on retourne le code 0.
-// TODO :	Gerer le flag E_OPTION ici ? Ca serait plus propre.
+// TODO :	Gerer le flag FLAG_E_OPTION ici ? Ca serait plus propre.
 // TODO :	Passer le nombre de resultats souhaites en parametre de afficherResultats ? + de reutilisabilite p-e
 // NB :		L'url du requeteur ne peut jamais etre relative. Elle ne peut etre qu'absolue ou nulle, c'est a dire "-".
 // Cas limite :	navigation dans un onglet, ouverture d'un second onglet puis navigation, puis retour dans le
@@ -63,8 +64,8 @@ int Application::Run ( const string& nomGraph, int heure )
 	ifstream fichier(fichierEntree, ios::in);
 	string racine = "http://google.com";		// Racine initiale par defaut
 	string lecture;
-	string tamponRequete;
-	string tamponRequeteur;
+	string tamponArc;
+	string tamponArcur;
 	size_t posTampon;
 	const string STR_GET = string( "GET" );
 	const string STR_DOUBLEQUOTE = string( "\"" );
@@ -85,7 +86,7 @@ int Application::Run ( const string& nomGraph, int heure )
 		posTampon = lecture.find("[");
 		posTampon = lecture.substr( posTampon ).find( ":" );
 		// Si on choisi de ne garder que les requetes a une certaine heure
-		if ( ( flags & ONE_HOUR ) == ONE_HOUR )
+		if ( ( flags & FLAG_ONE_HOUR ) == FLAG_ONE_HOUR )
 		{
 			// Si l'heure n'est pas bonne, on saute la ligne
 			if ( strtol( lecture.substr( posTampon + 1, 2 ).c_str( ), nullptr, 0 ) != heure )
@@ -99,20 +100,22 @@ int Application::Run ( const string& nomGraph, int heure )
 		{
 			continue;
 		}
-		tamponRequete = lecture.substr( posTampon + SIZE_STR_GET + 1,
+		tamponArc = lecture.substr( posTampon + SIZE_STR_GET + 1,
 			lecture.substr( posTampon + SIZE_STR_GET + 1 ).find(" ") );
-			// A partir de la tamponRequete contient l'url a laquelle on a voulu acceder
+			// A partir de la tamponArc contient l'url a laquelle on a voulu acceder
 		lecture = lecture.substr( posTampon );
 		posTampon = lecture.find( STR_DOUBLEQUOTE );
 		lecture = lecture.substr( posTampon + 1 );
 		posTampon = lecture.find( STR_DOUBLEQUOTE );
 			// posTampon arrive au debut de l'url du requeteur
-		tamponRequeteur = lecture.substr( posTampon + 1, lecture.substr( posTampon + 1 ).find( STR_DOUBLEQUOTE ) );
-			// tamponRequeteur contient l'url du requeteur
-		cout << "Requete : " << tamponRequete << " Requeteur : " << tamponRequeteur << endl;
+		tamponArcur = lecture.substr( posTampon + 1, lecture.substr( posTampon + 1 ).find( STR_DOUBLEQUOTE ) );
+			// tamponArcur contient l'url du requeteur
+#ifdef MAP
+		cout << "Arc : " << tamponArc << " Arcur : " << tamponArcur << endl;
+#endif
 
-		PageInternet p1( tamponRequete );
-		PageInternet p2( tamponRequeteur );
+		PageInternet p1( tamponArc );
+		PageInternet p2( tamponArcur );
 		
 		// Si la requete a une url relative
 		if ( p1.GetRacine( ) == "" )
@@ -125,7 +128,7 @@ int Application::Run ( const string& nomGraph, int heure )
 			}
 
 			// Si le requeteur n'existe pas (url "-"), on prend la racine de la page precedente
-			p1 = PageInternet( racine + tamponRequete );	// On prend la racine du requeteur
+			p1 = PageInternet( racine + tamponArc );	// On prend la racine du requeteur
 
 		}
 
@@ -134,7 +137,7 @@ int Application::Run ( const string& nomGraph, int heure )
 	}
 
 	// Ecriture du graphe sur le disque au format .dot si l'option a ete specifiee
-	if ( ( flags & DRAW_GRAPH ) == DRAW_GRAPH )
+	if ( ( flags & FLAG_DRAW_GRAPH ) == FLAG_DRAW_GRAPH )
 	{
 		return ecrireGraph( nomGraph );		// On renvoie le code retour de ecrireGraph qui aura cree ou non le fichier .dot
 	}
@@ -164,7 +167,7 @@ Application& Application::operator = ( const Application & uneApplication )
 	if ( this != &uneApplication )
 	{
 		fichierEntree = uneApplication.fichierEntree;
-		graph = uneApplication.graph;
+		graphe = uneApplication.graphe;
 		flags = uneApplication.flags;
 	}
 	return *this;
@@ -175,7 +178,7 @@ Application& Application::operator = ( const Application & uneApplication )
 //-------------------------------------------- Constructeurs - destructeur
 Application::Application ( const Application & uneApplication ) :
 	fichierEntree( uneApplication.fichierEntree ),
-	graph( uneApplication.graph ), flags( uneApplication.flags )
+	graphe( uneApplication.graphe ), flags( uneApplication.flags )
 // Algorithme :	Utilisation des constructeurs de copie de string, map et Uint16 (uint16_t).
 {
 #ifdef MAP
@@ -187,7 +190,7 @@ Application::Application ( const Application & uneApplication ) :
 
 
 Application::Application ( string fichierIn, Uint16 f ) :
-	fichierEntree( fichierIn ), graph( ), flags( f )
+	fichierEntree( fichierIn ), graphe( ), flags( f )
 // Algorithme :	Instanciation a partir des constructeurs de string, map et Uint16 (uint16_t).
 //
 {
@@ -212,41 +215,49 @@ Application::~Application ( )
 //------------------------------------------------------------------ PRIVE
 
 //----------------------------------------------------- Méthodes protégées
-int Application::ecrireGraph ( std::string filename )
+int Application::ecrireGraph ( const string& fichier )
 // Algorithme :
 {
 	// Declaration des variables
-    ofstream fichierGraphe;
     IterateurGraph iteGraphe;
     Arcs::iterator iteArc;
-    // Ouverture du fichier et ecriture des lignes d'en-tête qui ne dependent pas du graphe
-    fichierGraphe.open(filename);
-    if ( fichierGraphe.is_open() )
+	ofstream fichierGraphe;
+	string nomFichier = fichier;
+
+	if ( nomFichier.find(".dot") == string::npos )
+	{
+		nomFichier += ".dot";
+	}
+	
+	fichierGraphe.open( nomFichier );	// Fonctionne seulement avec c++11 ; nomFichier.c_str() sinon
+
+    // Ecriture des lignes d'en-tête qui ne dependent pas du graphe, si le fichier est ouvert
+    if ( fichierGraphe )
     {
-        fichierGraphe<<"//Fichier "<< filename<< "\n\n\n\n";
-        fichierGraphe<<"digraph {\n";
+        fichierGraphe << "//Fichier " << nomFichier << "\n\n\n\n";
+        fichierGraphe << "digraph {\n";
         // Ecriture des lignes propres au graphe
-        for ( iteGraphe = graph.begin(); iteGraphe != graph.end(); iteGraphe++ )
+        for ( iteGraphe = graphe.begin( ); iteGraphe != graphe.end( ); iteGraphe++ )
         {
             // ecriture du noeud
             fichierGraphe<< "\t"<<iteGraphe->first.GetOutputComplet();
-            if(iteGraphe->first.GetEstIsole() == true)
+            if( iteGraphe->first.GetEstIsole( ) == true )
             {
-                fichierGraphe << "[label = " << iteGraphe->first.GetOutputExt() << "]";
+                fichierGraphe << "[label = " << iteGraphe->first.GetOutputExt( ) << "]";
             }
-            fichierGraphe<< ";\n";
+            fichierGraphe << ";\n";
             // ecriture des aretes
-            for ( iteArc = iteGraphe->second.begin(); iteArc != iteGraphe->second.end(); iteArc++ )
+            for ( iteArc = iteGraphe->second.begin ( ); iteArc != iteGraphe->second.end( ); iteArc++ )
             {
-                fichierGraphe << iteArc->GetPageInternet()->GetOutputComplet() << " -> ";
-                fichierGraphe << iteGraphe->first.GetOutputComplet();
-                fichierGraphe << " [label = " << iteArc->GetNombreAcces() << "];\n";
+                fichierGraphe << iteArc->GetPageInternet( )->GetOutputComplet( ) << " -> ";
+                fichierGraphe << iteGraphe->first.GetOutputComplet( );
+                fichierGraphe << " [label = " << iteArc->GetNombreAcces( ) << "];\n";
             }
         }
 
         // pied de page -> ne depend pas du graphe
-        fichierGraphe<<"}";
-        fichierGraphe.close();
+        fichierGraphe << "}";
+        fichierGraphe.close( );
         return 0;
     }
 	return -1002;		// En cas d'erreur lors de l'ecriture
@@ -255,7 +266,7 @@ int Application::ecrireGraph ( std::string filename )
 void Application::afficherResultats ( )
 // Algorithme :	Parcours sequentiel du graph :
 //				Pour chaque noeud, on calcul le nombre total de fois ou on a accede a celui-ci en additionnant
-//				le nombre d'acces de chaque arc (=Requete.nombreAcces).
+//				le nombre d'acces de chaque arc (=Arc.nombreAcces).
 //				Si on n'a pas encore atteint le nombre de resultats souhaite, on insere le noeud dans une std::list
 //				sans se poser de questions (list permet un tri plus rapide que vector).
 //				Sinon, on tri la liste par ordre decroissant (grace au foncteur ComparaisonAccesPages) du nombre
@@ -267,7 +278,7 @@ void Application::afficherResultats ( )
 //				des pages qui la compose, ainsi que le nombre d'acces fait a chaque page.
 // Complexite :	O(n*m), mais m est en general tres petit.
 //				De plus, cette operation n'est realisee qu'une seule et unique fois par appel a Run(),
-//				et seulement si le flag DRAW_GRAPH n'est pas present.
+//				et seulement si le flag FLAG_DRAW_GRAPH n'est pas present.
 //				Si on avait trie notre map (= graph) par le nombre d'acces fait a chaque noeud, cette operation
 //				aurait ete en O(1), mais les autres operations (recherche, insertion) auraient ete
 //				plus longues et moins pertinentes : il est plus evident de trier les PageInternets par leur url,
@@ -278,7 +289,7 @@ void Application::afficherResultats ( )
 	MeilleuresPages meilleursResultats;
 
 	// Parcours du graph pour trouver les dix pages les plus consultees
-	for ( IterateurGraph itg = graph.begin(); itg != graph.end(); itg++ )
+	for ( IterateurGraph itg = graphe.begin(); itg != graphe.end(); itg++ )
 	{
 		// Déclarations variables pour plus de praticite
 		int i = 0;
@@ -306,8 +317,7 @@ void Application::afficherResultats ( )
 			if ( nbTotalAcces > meilleursResultats.rbegin()->second )
 			{
 				// On l'ajoute
-				PageInternet p( itg->first );
-				meilleursResultats.push_back( AccesPage( p, nbTotalAcces ) );
+				meilleursResultats.push_back( AccesPage( PageInternet( itg->first ), nbTotalAcces ) );
 				// On retri (tres rapide)
 				meilleursResultats.sort( ComparaisonAccesPages( ) );
 				// On supprime le dernier
@@ -325,28 +335,28 @@ void Application::afficherResultats ( )
 	// Affichage
 	for ( IterateurMeilleuresPages itmp = meilleursResultats.begin( ); itmp != meilleursResultats.end( ); itmp ++ )
 	{
-		cout << itmp->first.GetUrl() << ends << itmp->second << endl;
+		cout << itmp->first.GetUrl() << " (" << itmp->second << " hits)" << endl;
 	}
 
 }	//----- Fin de afficherResultats
 
-void Application::remplirGraph ( const PageInternet& pageRequete, const PageInternet& pRequetrice )
+void Application::remplirGraph ( const PageInternet& pageArc, const PageInternet& pRequetrice )
 // Algorithme :	Pour le moment, les requeteur d'un type indesirable sont geres comme suit :
-//				On insere a leur place une Requete avec un pointeur vers une PageInternet
-//				qui a l'url "Autre Type Requeteur".
+//				On insere a leur place une Arc avec un pointeur vers une PageInternet
+//				qui a l'url "Autre Type Arcur".
 //				La page requetrice sera inseree en tant que noeud sauf si elle est d'un type
 //				qui doit être exclu de l'analyse.
 // TODO : mettre un retour
 {
-	const string STR_REQUETEUR_EXCLU = "Autre Type Requeteur";
+	const string STR_REQUETEUR_EXCLU = "Autre Type Arcur";
 	Arcs::iterator ita;
 	PageInternet pageRequetrice( pRequetrice );		// Pour manipuler une page requetrice a ne pas analyser
 
 	// Si le flag de l'option -e est present, on verifie que les deux PageInternets sont du bon type
-	if ( ( flags & E_OPTION ) == E_OPTION )
+	if ( ( flags & FLAG_E_OPTION ) == FLAG_E_OPTION )
 	{
-		if ( IMAGE.find( pageRequete.GetType( ) ) != string::npos
-			|| SCRIPT.find( pageRequete.GetType( ) ) != string::npos )
+		if ( IMAGE.find( pageArc.GetType( ) ) != string::npos
+			|| SCRIPT.find( pageArc.GetType( ) ) != string::npos )
 		{
 			return;		// On ne traite pas la ligne
 		}
@@ -360,7 +370,7 @@ void Application::remplirGraph ( const PageInternet& pageRequete, const PageInte
 	// Que la page d'url requete soit presente en tant que noeud ou pas, le code reste inchange
 	// Il en va de même pour l'exclusion ou non de la page requetrice
 	
-	Arcs & arcs = graph[pageRequete];	// NB :	Soit la page existe en tant que noeud, 
+	Arcs & arcs = graphe[pageArc];	// NB :	Soit la page existe en tant que noeud, 
 										//		auquel cas on creee juste une reference,
 										//		soit elle n'existe pas,
 										//		auquel cas elle est insere et on cree une reference.
@@ -368,12 +378,12 @@ void Application::remplirGraph ( const PageInternet& pageRequete, const PageInte
 										//		a chaque fois, bien qu'en O(log2(n))
 
 	// Que le requeteur soit d'un type indesirable ou non, c'est le meme algorithme d'insertion
-	ita = find( arcs.begin( ), arcs.end( ), Requete( &pageRequetrice ) );
+	ita = find( arcs.begin( ), arcs.end( ), Arc( &pageRequetrice ) );
 
 	// Si le requeteur n'est pas present dans le vecteur d'arcs
 	if ( ita == arcs.end( ) )
 	{
-		arcs.push_back( Requete( &pageRequetrice ) );	// On l'insere
+		arcs.push_back( Arc( &pageRequetrice ) );	// On l'insere
 	}
 	else
 	{
@@ -383,7 +393,7 @@ void Application::remplirGraph ( const PageInternet& pageRequete, const PageInte
 	// Si la page d'url requeteur est du bon type
 	if ( pageRequetrice.GetUrl( ) != STR_REQUETEUR_EXCLU )
 	{
-		graph[pageRequetrice];	// On l'insere si elle n'est pas presente en tant que noeud,
+		graphe[pageRequetrice];	// On l'insere si elle n'est pas presente en tant que noeud,
 								// sinon rien ne se passe.
 	}
 
