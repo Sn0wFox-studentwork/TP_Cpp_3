@@ -7,7 +7,7 @@ using namespace std;
 void Tests( )
 {
 	// Si la clef n'existe pas, la valeur prend une valeur nulle (fonction du type de la clef)
-	Graphe ryan;
+	GrapheRequetes ryan;
 	PageInternet p1( "hi" );
 	PageInternet p2( "hi2" );
 	ryan[p1];
@@ -21,7 +21,7 @@ void Tests( )
 		cout << p.GetRacine( ) << endl;
 	}
 
-	for ( IterateurGraph it = ryan.begin( ); it != ryan.end( ); it++ )
+	for ( IterateurGrapheRequetes it = ryan.begin( ); it != ryan.end( ); it++ )
 	{
 		cout << it->first.GetOutputComplet( ) << endl;
 	}
@@ -111,25 +111,25 @@ void TestTri()
 void TestGraph( )
 // Verifie que les pages sont bien clasees par ordre lexicographique
 {
-	Graphe g;
+	GrapheRequetes g;
 	PageInternet p1( "page1.html" );
 	PageInternet p2( "page2.html" );
 	PageInternet p3( "page3.html" );
 	PageInternet p4( "monstyle.css" );
 
 	Arcs & a = g[p3];
-	a.push_back( Arc( &p1 ) );
+	a.push_back( ArcRequete( &p1 ) );
 	g[p4];
 	g[p1];
 	g[p2];
 
-	for ( IterateurGraph itg = g.begin( ); itg != g.end (); itg++ )
+	for ( IterateurGrapheRequetes itg = g.begin( ); itg != g.end (); itg++ )
 	{
 		cout << itg->first.GetOutputComplet( ) << endl;
 	}
 
 	cout << "g[p3][0].GetPageInternet->GetOutputComplet( ) via ref : "
-		<< a[0].GetPageInternet( )->GetOutputComplet( ) << endl;
+		<< a[0].GetRequeteur( )->GetOutputComplet( ) << endl;
 }
 
 void TestFichier( )

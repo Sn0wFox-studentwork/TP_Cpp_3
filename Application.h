@@ -18,13 +18,10 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 #include <iostream>
 
 #include "PageInternet.h"
-#include "Arc.h"
+#include "GrapheRequetes.h"
 
 //------------------------------------------------------------------ Types
 typedef uint16_t Uint16;							// Type des flags (= options)
-typedef std::vector<Arc> Arcs;					// Type des liens
-typedef std::map<PageInternet, Arcs> Graphe;		// Map de [noeud, liens vers noeud] (=[PageInternet, Ensemble des autres Page la referencant])
-typedef Graphe::iterator IterateurGraph;			// Iterateur pour map de requete
 
 //------------------------------------------------------------- Constantes
 
@@ -97,12 +94,6 @@ public:
 
 protected:
 //----------------------------------------------------- Méthodes protégées
-	int ecrireGraph ( const std::string& filename );
-	// Mode d'emploi :	Retourne 0 si le graph a pu etre ecrit,
-	//					-1002 sinon.
-	//
-	// Contrat :
-	//
 
 	void afficherResultats ( );
 	// Mode d'emploi :	Affiche les 10 PageInternets les plus consultees.
@@ -122,7 +113,7 @@ private:
 protected:
 //----------------------------------------------------- Attributs protégés
 	std::string fichierEntree;
-	Graphe graphe;
+	GrapheRequetes graphe;
 	Uint16 flags;
 
 private:

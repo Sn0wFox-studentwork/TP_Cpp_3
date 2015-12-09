@@ -139,7 +139,7 @@ int Application::Run ( const string& nomGraph, int heure )
 	// Ecriture du graphe sur le disque au format .dot si l'option a ete specifiee
 	if ( ( flags & FLAG_DRAW_GRAPH ) == FLAG_DRAW_GRAPH )
 	{
-		return ecrireGraph( nomGraph );		// On renvoie le code retour de ecrireGraph qui aura cree ou non le fichier .dot
+		return graphe.ExportFormatGraphViz( nomGraph );		// On renvoie le code retour de ecrireGraph qui aura cree ou non le fichier .dot
 	}
 	else
 	// Sinon, affichage des dix pages les plus consultees
@@ -215,53 +215,6 @@ Application::~Application ( )
 //------------------------------------------------------------------ PRIVE
 
 //----------------------------------------------------- Méthodes protégées
-int Application::ecrireGraph ( const string& fichier )
-// Algorithme :
-{
-	// Declaration des variables
-    IterateurGraph iteGraphe;
-    Arcs::iterator iteArc;
-	ofstream fichierGraphe;
-	string nomFichier = fichier;
-
-	if ( nomFichier.find(".dot") == string::npos )
-	{
-		nomFichier += ".dot";
-	}
-	
-	fichierGraphe.open( nomFichier );	// Fonctionne seulement avec c++11 ; nomFichier.c_str() sinon
-
-    // Ecriture des lignes d'en-tête qui ne dependent pas du graphe, si le fichier est ouvert
-    if ( fichierGraphe )
-    {
-        fichierGraphe << "//Fichier " << nomFichier << "\n\n\n\n";
-        fichierGraphe << "digraph {\n";
-        // Ecriture des lignes propres au graphe
-        for ( iteGraphe = graphe.begin( ); iteGraphe != graphe.end( ); iteGraphe++ )
-        {
-            // ecriture du noeud
-            fichierGraphe<< "\t"<<iteGraphe->first.GetOutputComplet();
-            if( iteGraphe->first.GetEstIsole( ) == true )
-            {
-                fichierGraphe << "[label = " << iteGraphe->first.GetOutputExt( ) << "]";
-            }
-            fichierGraphe << ";\n";
-            // ecriture des aretes
-            for ( iteArc = iteGraphe->second.begin ( ); iteArc != iteGraphe->second.end( ); iteArc++ )
-            {
-                fichierGraphe << iteArc->GetPageInternet( )->GetOutputComplet( ) << " -> ";
-                fichierGraphe << iteGraphe->first.GetOutputComplet( );
-                fichierGraphe << " [label = " << iteArc->GetNombreAcces( ) << "];\n";
-            }
-        }
-
-        // pied de page -> ne depend pas du graphe
-        fichierGraphe << "}";
-        fichierGraphe.close( );
-        return 0;
-    }
-	return -1002;		// En cas d'erreur lors de l'ecriture
-}	//----- Fin de ecrireGraph
 
 void Application::afficherResultats ( )
 // Algorithme :	Parcours sequentiel du graph :
@@ -289,7 +242,7 @@ void Application::afficherResultats ( )
 	MeilleuresPages meilleursResultats;
 
 	// Parcours du graph pour trouver les dix pages les plus consultees
-	for ( IterateurGraph itg = graphe.begin(); itg != graphe.end(); itg++ )
+	for ( IterateurGrapheRequetes itg = graphe.begin(); itg != graphe.end(); itg++ )
 	{
 		// Déclarations variables pour plus de praticite
 		int i = 0;
@@ -370,24 +323,24 @@ void Application::remplirGraph ( const PageInternet& pageArc, const PageInternet
 	// Que la page d'url requete soit presente en tant que noeud ou pas, le code reste inchange
 	// Il en va de même pour l'exclusion ou non de la page requetrice
 	
-	Arcs & arcs = graphe[pageArc];	// NB :	Soit la page existe en tant que noeud, 
-										//		auquel cas on creee juste une reference,
-										//		soit elle n'existe pas,
-										//		auquel cas elle est insere et on cree une reference.
-										//		Cette reference permet de ne pas refaire la rechrche dans la map
-										//		a chaque fois, bien qu'en O(log2(n))
+	Arcs& arcs = graphe[pageArc];	// NB :	Soit la page existe en tant que noeud, 
+									//		auquel cas on creee juste une reference,
+									//		soit elle n'existe pas,
+									//		auquel cas elle est insere et on cree une reference.
+									//		Cette reference permet de ne pas refaire la rechrche dans la map
+									//		a chaque fois, bien qu'en O(log2(n))
 
 	// Que le requeteur soit d'un type indesirable ou non, c'est le meme algorithme d'insertion
-	ita = find( arcs.begin( ), arcs.end( ), Arc( &pageRequetrice ) );
+	ita = find( arcs.begin( ), arcs.end( ), ArcRequete( &pageRequetrice ) );
 
 	// Si le requeteur n'est pas present dans le vecteur d'arcs
 	if ( ita == arcs.end( ) )
 	{
-		arcs.push_back( Arc( &pageRequetrice ) );	// On l'insere
+		arcs.push_back( ArcRequete( &pageRequetrice ) );	// On l'insere
 	}
 	else
 	{
-		ita->IncrementeNombreAcces( );
+		(*ita)++;
 	}
 
 	// Si la page d'url requeteur est du bon type
