@@ -16,7 +16,7 @@
 
 #include "PageInternet.h"
 
-//------------------------------------------------------------- Constantes 
+//------------------------------------------------------------- Constantes
 
 //------------------------------------------------------------------ Types
 class ArcRequete
@@ -38,6 +38,11 @@ public:
 		ArcRequete exThis = *this;
 		++(*this);
 		return exThis;
+	}
+	ArcRequete operator+= ( int i )		// PostFix
+	{
+		nombreAcces += i;
+		return *this;
 	}
 	bool operator== ( const ArcRequete& uneArc ) const
 	// Algorithme :
@@ -68,11 +73,11 @@ private:
 typedef std::vector<ArcRequete> Arcs;
 typedef Arcs::iterator IterateurArcs;
 
-//------------------------------------------------------------------------ 
+//------------------------------------------------------------------------
 // Rôle de la classe <GrapheRequetes>
 //
 //
-//------------------------------------------------------------------------ 
+//------------------------------------------------------------------------
 
 class GrapheRequetes : public std::map<PageInternet, Arcs>
 {
@@ -108,7 +113,7 @@ public:
     // Contrat :
     //
 
-//------------------------------------------------------------------ PRIVE 
+//------------------------------------------------------------------ PRIVE
 
 protected:
 //----------------------------------------------------- Méthodes protégées
