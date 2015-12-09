@@ -39,7 +39,7 @@ public:
 		++(*this);
 		return exThis;
 	}
-	bool ArcRequete::operator== ( const ArcRequete& uneArc ) const
+	bool operator== ( const ArcRequete& uneArc ) const
 	// Algorithme :
 	{
 		return *requeteur == *uneArc.requeteur;

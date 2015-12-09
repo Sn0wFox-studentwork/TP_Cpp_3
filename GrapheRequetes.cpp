@@ -48,7 +48,7 @@ int GrapheRequetes::ExportFormatGraphViz( string fichier )
 		nomFichier += ".dot";
 	}
 	
-	fichierGraphe.open( nomFichier );	// Fonctionne seulement avec c++11 ; nomFichier.c_str() sinon
+	fichierGraphe.open( nomFichier.c_str( ) );	// Fonctionne seulement avec c++11 ; nomFichier.c_str() sinon
 
     // Ecriture des lignes d'en-tête qui ne dependent pas du graphe, si le fichier est ouvert
     if ( fichierGraphe )

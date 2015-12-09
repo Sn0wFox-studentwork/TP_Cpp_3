@@ -6,11 +6,11 @@
 #include "Application.h"
 
 // TODO : remove when release :
-#include "TestsUnitaires.h"
+//#include "TestsUnitaires.h"
 
 using namespace std;
 
-int main ( unsigned int argc, char** argv )
+int main ( int argc, char** argv )
 // Algorithme :	On commence par recuperer les options et le fichier d'entree.
 //				S'il n'y a pas de parametre d'entree (i.e. argc = 1), fin de l'application avec le code -1.
 //				On cree ensuite une instance de Application avec le fichier d'entree associe,
@@ -31,7 +31,7 @@ int main ( unsigned int argc, char** argv )
 		cerr << "Pas assez de parametres" << endl;
 		return -1;
 	}
-	for ( unsigned int i = 1; i < argc; i++ )		// On commence a 1 car argv[0] est le chemin vers notre executable
+	for ( int i = 1; i < argc; i++ )		// On commence a 1 car argv[0] est le chemin vers notre executable
 	{
 		lecture = argv[i];
 		// Recuperation des options
