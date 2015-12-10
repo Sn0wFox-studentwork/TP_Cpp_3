@@ -17,39 +17,26 @@ using namespace std;
 //------------------------------------------------------ Include personnel
 #include "GrapheRequetes.h"
 
-//------------------------------------------------------------- Constantes
-
-//---------------------------------------------------- Variables de classe
-
-//----------------------------------------------------------- Types privés
-
 //----------------------------------------------------------------- PUBLIC
-//-------------------------------------------------------- Fonctions amies
 
 //----------------------------------------------------- Méthodes publiques
-// type GrapheRequetes::Méthode ( liste de paramètres )
-// Algorithme :
-//
-//{
-//} //----- Fin de Méthode
 
-
-int GrapheRequetes::ExportFormatGraphViz( string fichier )
+int GrapheRequetes::ExportFormatGraphViz( string fichier ) const
 // Algorithme :
 {
 	// Declaration des variables
-    IterateurGrapheRequetes iteGraphe;
-    IterateurArcs iteArc;
-	ofstream fichierGraphe;
+    IterateurGrapheRequetesConst iteGraphe;
+    IterateurArcsConst iteArc;
+	int i = 0;
 	string nomFichier = fichier;
 
 	if ( nomFichier.find(".dot") == string::npos )
 	{
 		nomFichier += ".dot";
 	}
-	
-	fichierGraphe.open( nomFichier.c_str( ) );	// Fonctionne seulement avec c++11 ; nomFichier.c_str() sinon
 
+	ofstream fichierGraphe( nomFichier.c_str( ) );	// string fonctionne seulement avec c++11 ; nomFichier.c_str() sinon
+	
     // Ecriture des lignes d'en-tête qui ne dependent pas du graphe, si le fichier est ouvert
     if ( fichierGraphe )
     {
@@ -58,6 +45,7 @@ int GrapheRequetes::ExportFormatGraphViz( string fichier )
         // Ecriture des lignes propres au graphe
         for ( iteGraphe = this->begin( ); iteGraphe != this->end( ); iteGraphe++ )
         {
+			cout << i << endl;
             // ecriture du noeud
             fichierGraphe<< "\t"<<iteGraphe->first.GetOutputComplet();
             if( iteGraphe->first.GetEstIsole( ) == true )
@@ -68,7 +56,7 @@ int GrapheRequetes::ExportFormatGraphViz( string fichier )
             // ecriture des aretes
             for ( iteArc = iteGraphe->second.begin( ); iteArc != iteGraphe->second.end( ); iteArc++ )
             {
-                fichierGraphe << iteArc->GetRequeteur( )->GetOutputComplet( ) << " -> ";
+                fichierGraphe << iteArc->GetRequeteur( ).GetOutputComplet( ) << " -> ";
                 fichierGraphe << iteGraphe->first.GetOutputComplet( );
                 fichierGraphe << " [label = " << iteArc->GetNombreAcces( ) << "];\n";
             }
@@ -76,10 +64,10 @@ int GrapheRequetes::ExportFormatGraphViz( string fichier )
 
         // pied de page -> ne depend pas du graphe
         fichierGraphe << "}";
-        fichierGraphe.close( );
         return 0;
     }
 	return -1002;		// En cas d'erreur lors de l'ecriture
+
 }	//----- Fin de ExportFormatGraphViz
 
 //-------------------------------------------- Constructeurs - destructeur
@@ -113,10 +101,3 @@ GrapheRequetes::~GrapheRequetes ( )
 	// Pas d'allocation dynamique
 
 }	//----- Fin de ~GrapheRequetes
-
-
-//------------------------------------------------------------------ PRIVE
-
-//----------------------------------------------------- Méthodes protégées
-
-//------------------------------------------------------- Méthodes privées

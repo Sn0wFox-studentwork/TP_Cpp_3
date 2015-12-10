@@ -118,7 +118,7 @@ void TestGraph( )
 	PageInternet p4( "monstyle.css" );
 
 	Arcs & a = g[p3];
-	a.push_back( ArcRequete( &p1 ) );
+	a.push_back( ArcRequete( p1 ) );
 	g[p4];
 	g[p1];
 	g[p2];
@@ -129,7 +129,7 @@ void TestGraph( )
 	}
 
 	cout << "g[p3][0].GetPageInternet->GetOutputComplet( ) via ref : "
-		<< a[0].GetRequeteur( )->GetOutputComplet( ) << endl;
+		<< a[0].GetRequeteur( ).GetOutputComplet( ) << endl;
 }
 
 void TestFichier( )
@@ -146,5 +146,13 @@ void TestPrintResultats( )
 	string lecture;
 	Application app( fichier, FLAG_NO_FLAGS );
 	cout << app.Run( );
+
+}
+
+void TestGrosFichierGraph( )
+{
+	cout << "Test anonyme.log" << endl;
+	Application a("anonyme.log", FLAG_DRAW_GRAPH);
+	a.Run();
 
 }

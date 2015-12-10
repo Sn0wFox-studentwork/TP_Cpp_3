@@ -1,14 +1,24 @@
+/*************************************************************************
+		main  -  contient le point d'entrée de l'application
+-------------------
+début                : 23/11/2015
+copyright            : (C) 2015 par Pericas-Moya & Belletier
+*************************************************************************/
+
+//---------- Réalisation du main (fichier main.cpp) ----------------------
+
+//---------------------------------------------------------------- INCLUDE
+
+//-------------------------------------------------------- Include système
+using namespace std;
 #include <iostream>
 #include <string>
 #include <cstdlib>
 #include <cstddef>
 
+//------------------------------------------------------ Include personnel
 #include "Application.h"
-
-// TODO : remove when release :
-//#include "TestsUnitaires.h"
-
-using namespace std;
+#include "TestsUnitaires.h"
 
 int main ( int argc, char** argv )
 // Algorithme :	On commence par recuperer les options et le fichier d'entree.
@@ -16,6 +26,7 @@ int main ( int argc, char** argv )
 //				On cree ensuite une instance de Application avec le fichier d'entree associe,
 //				ou on termine l'application avec le code -2 si le nom du fichier d'entree n'est pas valide (vide).
 //				On lance l'application via Run( ) avec les options voulues, qui produit le resultat.
+//				Retourne le code renvoye par Run( ).
 {
 	// Declaration des variables de stockage et de manipulation
 	Uint16 flags = FLAG_NO_FLAGS;
@@ -23,6 +34,8 @@ int main ( int argc, char** argv )
 	string heure = "0";
 	string nomFichierEntree;
 	string nomGraph = "";
+
+	TestGrosFichierGraph();
 	
 	// Recuperation des parametres
 	if ( argc < 2 )
@@ -81,4 +94,4 @@ int main ( int argc, char** argv )
 	// Lancement du traitement puis fin du programme : on retourne la valeur retournee par Run
 	return app.Run( nomGraph, strtol( heure.c_str( ), nullptr, 0 ) );
 
-}
+}	//----- Fin de main

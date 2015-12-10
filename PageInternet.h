@@ -13,8 +13,9 @@
 #include <string>
 
 //------------------------------------------------------------- Constantes
-const std::string IMAGE = ".png.gif.jpeg.jpg.bmp.tiff.ico";		// Pages de type image
-const std::string SCRIPT = ".js.css";							// Pages de type script css ou javascript
+const std::string IMAGE = ".png.gif.jpeg.jpg.bmp.tiff.ico.svg.dxf.eps.ps.wpg.pcx.pict.cgm.wep.bpg.pgm.heif";
+										// Pages de type image
+const std::string SCRIPT = ".js.css";	// Pages de type script css ou javascript
 
 //------------------------------------------------------------------ Types
 

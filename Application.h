@@ -21,9 +21,10 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 #include "GrapheRequetes.h"
 
 //------------------------------------------------------------------ Types
-typedef uint16_t Uint16;							// Type des flags (= options)
+typedef uint16_t Uint16;	// Type des flags (= options)
 
 //------------------------------------------------------------- Constantes
+const std::string STR_REQUETEUR_EXCLU = "Autre Type Requeteur";		// Signal un requeteur de type indesirable
 
 // Les constantes suivantes representent les options avec lesquelles on peut lancer l'application :
 const Uint16 FLAG_NO_FLAGS		=	0x0000;								// Sans option
@@ -37,8 +38,10 @@ const Uint16 FLAG_ALL_FLAGS		=	FLAG_DRAW_GRAPH | FLAG_E_OPTION | FLAG_ONE_HOUR;	
 //------------------------------------------------------------------------
 // Rôle de la classe <Application>
 // La classe Application gere le fonctionnement global de l'application Analog.
-//
-//
+// C'est elle qui va récupérer le fichier de log et l'analyser pour en synthétiser le contenu.
+// Suivant les options (= flags) avec lesquels on a instancié Application, elle effectuera différents traitements.
+// Ces traitements ne pourront être effectués que sur un seul et unique fichier.
+// Pour analyser d'autres fichiers de journalisations, il faudra créer plusieurs instances de Application.
 //------------------------------------------------------------------------
 
 class Application
@@ -65,69 +68,50 @@ public:
 
 //------------------------------------------------- Surcharge d'opérateurs
 	Application& operator = ( const Application &uneApplication );
-	// Mode d'emploi :
-	//
-	// Contrat :
-	//
-
+	// Mode d'emploi :	Réaffecte l'instance courante pour la rendre en tout point similaire à uneApplication.
 
 //-------------------------------------------- Constructeurs - destructeur
 	Application ( const Application &uneApplication );
-	// Mode d'emploi (constructeur de copie) :
-	//
-	// Contrat :
-	//
+	// Mode d'emploi ( constructeur de copie ) :	Consruit une nouvelle instance d'Application
+	//												a partir d'une Application existante uneApplication.
+	//												L'objet instancie sera en tout point similaire a uneApplication.
 
 	Application ( std::string fichierEntree, Uint16 flags = FLAG_NO_FLAGS );
-	// Mode d'emploi :
-	//
-	// Contrat :
-	//
+	// Mode d'emploi :	Construit une nouvelle instance d'Application.
+	//					Le paramètre fichierEntree est le nom du fichier de logs qui sera potentiellement analysé
+	//					(si appel à Run()).
+	//					Le paramètre flags représente les options avec lesquelles les analyses pourront être faites.
+	//					Il n'existe pas de constructeur par défaut.
+	// Contrat :		L'utilisateur s'engage a n'utiliser que les flags definis plus hauts.
 
 	virtual ~Application ( );
-	// Mode d'emploi :
-	//
-	// Contrat :
-	//
+	// Mode d'emploi :	Detruit l'instance et libere la memoire. Appele automatiquement.
 
 //------------------------------------------------------------------ PRIVE
 
 protected:
 //----------------------------------------------------- Méthodes protégées
 
-	void afficherResultats ( );
-	// Mode d'emploi :	Affiche les 10 PageInternets les plus consultees.
-	//
-	// Contrat :
-	//
+	void afficherResultats ( unsigned int nbResultats = 10 ) const;
+	// Mode d'emploi :	Affiche les nbResultats PageInternets les plus consultees,
+	//					d'apres le fichier de logs fichierEntree.
+	//					Ne gere aucun flag.
+	// Contrat :		Ces nbResultats resultats devront etre present dans la structure graphe pour etre affiches.
+	//					Tout les autres flags devront avoir ete traites avant.
 
 	void remplirGraph ( const PageInternet& pageArc, const PageInternet& pageRequetrice );
-	// Mode d'emploi :
-	//
-	// Contrat :
-	//
-
-private:
-//------------------------------------------------------- Méthodes privées
+	// Mode d'emploi :	Rempli la structure graphe a partir de pageArc et pageRequetrice.
+	//					Ne gere aucun flag.
+	// Contrat :		Tout les autres flags devront avoir ete traites avant
+	//					(sinon les requetes indesirables seront inserees).
 
 protected:
 //----------------------------------------------------- Attributs protégés
-	std::string fichierEntree;
-	GrapheRequetes graphe;
-	Uint16 flags;
-
-private:
-//------------------------------------------------------- Attributs privés
-
-//---------------------------------------------------------- Classes amies
-
-//-------------------------------------------------------- Classes privées
-
-//----------------------------------------------------------- Types privés
+	std::string fichierEntree;	// Nom du fichier de logs
+	GrapheRequetes graphe;		// Structure permettant de stocker les requetes
+	Uint16 flags;				// Options de parsage et d'execution
 
 };
-
-//----------------------------------------- Types dépendants de <Application>
 
 #endif // APPLICATION_H
 
