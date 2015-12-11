@@ -1,0 +1,16 @@
+//Fichier testsGraphe/out7.txt.dot
+
+
+
+digraph {
+	"http:/\/site1.com/home.html";
+	"http:/\/site2.com/more.html" -> "http:/\/site1.com/home.html" [label = 1];
+	"http:/\/site1.com/rsc1.t"[label = "/rsc1.t"];
+	"http:/\/site2.com/more.html" -> "http:/\/site1.com/rsc1.t" [label = 1];
+	"http:/\/site1.com/home.html" -> "http:/\/site1.com/rsc1.t" [label = 1];
+	"http:/\/site1.com/rsc2.t";
+	"http:/\/site1.com/home.html" -> "http:/\/site1.com/rsc2.t" [label = 1];
+	"http:/\/site2.com/more.html";
+	"http:/\/site2.com/rsc1.t"[label = "/rsc1.t"];
+	"http:/\/site2.com/more.html" -> "http:/\/site2.com/rsc1.t" [label = 1];
+}

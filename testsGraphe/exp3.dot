@@ -1,0 +1,10 @@
+//Fichier testsGraphe/out3.dot
+
+
+
+digraph {
+	"http:/\/site1.com/rsc.t";
+	"http:/\/site1.com/rsc2.t" -> "http:/\/site1.com/rsc.t" [label = 1];
+	"http:/\/site1.com/rsc2.t"[label = "/rsc2.t"];
+	"http:/\/site1.com/rsc.t" -> "http:/\/site1.com/rsc2.t" [label = 5];
+}

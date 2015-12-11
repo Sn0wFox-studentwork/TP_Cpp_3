@@ -33,27 +33,27 @@ using namespace std;
 //{
 //} //----- Fin de Méthode
 
-std::string PageInternet::GetRacine() const
-//Algorithme : recherche du / de séparation dans la chaine
+std::string PageInternet::GetRacine ( ) const
+// Algorithme : recherche du / de séparation dans la chaine
 {
     std::string racine;
     size_t tampon;//traite le cas où on a une url complète
-    if (url == "-")//traitement du cas limite
+    if ( url == "-" )//traitement du cas limite
     {
         return "-";
     }
-    tampon = url.find("/");
-    if (tampon != string::npos)
+    tampon = url.find( "/" );
+    if ( tampon != string::npos )
     {
 
-        if(tampon < url.size() -2)//on evite la sortie de tableau au test suivant
+        if( tampon < url.size( ) -2 )//on evite la sortie de tableau au test suivant
         {
             if( url[tampon+1]=='/' )//on evite de s'arreter au // de http://
             {
-                if(url.substr(tampon+2).find("/") != string::npos)
+                if( url.substr( tampon+2 ).find( "/" ) != string::npos )
                 {
-                    tampon = tampon + 2 + url.substr(tampon+2).find("/");
-                    racine = url.substr(0,tampon);
+                    tampon = tampon + 2 + url.substr( tampon+2 ).find( "/" );
+                    racine = url.substr( 0, tampon );
                 }
                 else
                 {
@@ -63,12 +63,12 @@ std::string PageInternet::GetRacine() const
             }
             else
             {
-                racine = url.substr(0,tampon);
+                racine = url.substr( 0, tampon );
             }
         }
         else
         {
-            racine = url.substr(0,tampon);
+            racine = url.substr( 0, tampon );
         }
     }
     else
@@ -78,20 +78,20 @@ std::string PageInternet::GetRacine() const
     return racine;
 }
 
-std::string PageInternet::GetOutputComplet() const
-//Algorithme : recherche du // pour l'echapper+ echappage des "
+std::string PageInternet::GetOutputComplet ( ) const
+// Algorithme : recherche du // pour l'echapper+ echappage des "
 {
-    size_t tampon = url.find("/");
+    size_t tampon = url.find( "/" );
     std::string urlEchappee = url;
     //Recherche du //
-    if (tampon != string::npos)
+    if ( tampon != string::npos )
     {
 
-        if(tampon < url.size() -1)//on evite la sortie de tableau au url suivant
+        if( tampon < url.size( ) -1 )	//on evite la sortie de tableau au url suivant
         {
-            if( url[tampon+1]=='/' )//on verifie que c'est // et pas / (à priori il n'y en aura qu'un)
+            if( url[tampon+1]=='/' )	//on verifie que c'est // et pas / (à priori il n'y en aura qu'un)
             {
-                urlEchappee = url.substr(0,tampon+1) + "\\" + url.substr(tampon+1);//On insere un \ pour echapper le deuxieme /
+                urlEchappee = url.substr( 0, tampon+1 ) + "\\" + url.substr( tampon+1 );	//On insere un \ pour echapper le deuxieme /
             }
             else
             {
@@ -103,27 +103,26 @@ std::string PageInternet::GetOutputComplet() const
             urlEchappee = url;
         }
     }
-    //retour
     return "\"" + urlEchappee + "\"";
 }
 
-std::string PageInternet::GetOutputExt() const
-//Algorithme : echappage des "
+std::string PageInternet::GetOutputExt ( ) const
+// Algorithme : echappage des "
 {
-    return "\"" + GetExtension() + "\"";
+    return "\"" + GetExtension ( ) + "\"";
 }
 
-std::string PageInternet::GetExtension() const
+std::string PageInternet::GetExtension ( ) const
 //Algorithme : recherche du / de séparation dans la chaine
 {
     std::string extension;
-    size_t tampon;//traite le cas où on a une url complète
-    if (url == "-")//traitement du cas limite
+    size_t tampon;		//traite le cas où on a une url complète
+    if ( url == "-" )	//traitement du cas limite
     {
         return "";
     }
-    tampon = url.find("/");
-    if (tampon != string::npos)
+    tampon = url.find( "/" );
+    if ( tampon != string::npos )
     {
 
         if(tampon < url.size() -2)//on evite la sortie de tableau au url suivant

@@ -1,0 +1,10 @@
+//Fichier testsGraphe/out8.dot
+
+
+
+digraph {
+	"http:/\/site1.com/intermededeca[...]";
+	"http:/\/site1.com/rsc2.t" -> "http:/\/site1.com/intermededeca[...]" [label = 1];
+	"http:/\/site1.com/rsc2.t"[label = "/rsc2.t"];
+	"http:/\/site1.com/intermededeca[...]" -> "http:/\/site1.com/rsc2.t" [label = 5];
+}

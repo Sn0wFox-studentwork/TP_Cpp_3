@@ -6,6 +6,7 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 *************************************************************************/
 
 //---------- Réalisation du main (fichier main.cpp) ----------------------
+#define MAP
 
 //---------------------------------------------------------------- INCLUDE
 
@@ -18,7 +19,9 @@ using namespace std;
 
 //------------------------------------------------------ Include personnel
 #include "Application.h"
+#ifdef MAP
 #include "TestsUnitaires.h"
+#endif
 
 int main ( int argc, char** argv )
 // Algorithme :	On commence par recuperer les options et le fichier d'entree.
@@ -35,8 +38,10 @@ int main ( int argc, char** argv )
 	string nomFichierEntree;
 	string nomGraph = "";
 
-	TestGrosFichierGraph();
-	
+#ifdef MAP
+	TestPrintResultats( );
+#endif
+
 	// Recuperation des parametres
 	if ( argc < 2 )
 	{

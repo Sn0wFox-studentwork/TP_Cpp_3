@@ -13,6 +13,10 @@ void TestGraph ( );
 void TestFichier ( );
 void TestPrintResultats ( );
 void TestGrosFichierGraph ( );
+void TestPageInternetGets ( );
+void TestPageInternetOp ( );
+void TestPageInternet ( );
+void TestGrapheExport ( );
 
 typedef std::pair<PageInternet, int> AccesPage;
 typedef std::list<AccesPage> MeilleuresPages;

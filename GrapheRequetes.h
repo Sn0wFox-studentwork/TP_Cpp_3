@@ -18,56 +18,10 @@
 #include "PageInternet.h"
 
 //------------------------------------------------------------------ Types
-class ArcRequete
-// La classe ArcRequete modelise les arcs entre les noeuds d'un graphe GrapheRequetes.
-{
-//-----------PUBLIC
-public:
-//-----------Méthodes publiques
-	int GetNombreAcces ( ) const { return nombreAcces; }
-	PageInternet GetRequeteur ( ) const { return requeteur; }
-
-//-----------Surcharge d'opérateurs
-	ArcRequete& operator++ ( )			// Prefix
-	{
-		++nombreAcces;
-		return *this;
-	}
-	ArcRequete operator++ ( int )		// PostFix
-	{
-		ArcRequete exThis = *this;
-		++(*this);
-		return exThis;
-	}
-	bool operator== ( const ArcRequete& uneArc ) const
-	{
-		return requeteur == uneArc.requeteur;
-	}
-
-//-----------Constructeur
-	ArcRequete( const PageInternet& pageRequetrice ) : requeteur( pageRequetrice ), nombreAcces( 1 )
-	{
-#ifdef MAP
-		cout << "Appel au constructeur de <ArcRequete>" << endl;
-#endif
-	}
-
-//-----------PROTEGE
-protected:
-//-----------Attributs
-	PageInternet requeteur;
-	int nombreAcces;
-
-//-----------PRIVE
-private:
-//-----------Classe Amie
-	friend class Grapherequetes;
-
-};
-
+typedef std::pair<PageInternet, int> ArcRequete;	// Un arc du graphe (requeteur, nombre d'acces)
 typedef std::vector<ArcRequete> Arcs;				// Ensembles des arcs arrivant a un neoud donne
-typedef Arcs::iterator IterateurArcs;				// Iterateur 
-typedef Arcs::const_iterator IterateurArcsConst;
+typedef Arcs::iterator IterateurArcs;				// Iterateur sur la structure precedente
+typedef Arcs::const_iterator IterateurArcsConst;	// Iterateur constant sur la structure precedente
 
 //------------------------------------------------------------------------ 
 // Rôle de la classe <GrapheRequetes>
@@ -85,7 +39,7 @@ class GrapheRequetes : public std::map<PageInternet, Arcs>
 
 public:
 //----------------------------------------------------- Méthodes publiques
-    int ExportFormatGraphViz ( std::string nomFichier ) const;
+    int ExportFormatGraphViz ( const std::string& nomFichier ) const;
 	// Mode d'emploi :	Ecrit l'instance courante sur le disque sous forme de graphe GraphViz (format .dot).
 	//					Si le nom du fichier GraphViz nomFichier specifie ne se termine pas par ".dot",
 	//					l'extension sera ajoutee.

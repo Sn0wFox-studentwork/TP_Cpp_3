@@ -21,13 +21,16 @@ using namespace std;
 
 //----------------------------------------------------- Méthodes publiques
 
-int GrapheRequetes::ExportFormatGraphViz( string fichier ) const
+int GrapheRequetes::ExportFormatGraphViz( const string& fichier ) const
 // Algorithme :
 {
-	// Declaration des variables
+	// Taille maximale de l'url d'une age pour exportation dans le graphe
+	const size_t SIZE_URL_MAX = 30;		// Au dela, l'url sera tronquee et on lui adjoindra [...]
+
+	// Declaration des variables de manipulation du graphe :
     IterateurGrapheRequetesConst iteGraphe;
     IterateurArcsConst iteArc;
-	int i = 0;
+	// Variable permettant d'adjoindre ".dot" au nom de fichier si necessaire :
 	string nomFichier = fichier;
 
 	if ( nomFichier.find(".dot") == string::npos )
@@ -36,18 +39,23 @@ int GrapheRequetes::ExportFormatGraphViz( string fichier ) const
 	}
 
 	ofstream fichierGraphe( nomFichier.c_str( ) );	// string fonctionne seulement avec c++11 ; nomFichier.c_str() sinon
-	
+
     // Ecriture des lignes d'en-tête qui ne dependent pas du graphe, si le fichier est ouvert
     if ( fichierGraphe )
     {
         fichierGraphe << "//Fichier " << nomFichier << "\n\n\n\n";
         fichierGraphe << "digraph {\n";
+
         // Ecriture des lignes propres au graphe
         for ( iteGraphe = this->begin( ); iteGraphe != this->end( ); iteGraphe++ )
         {
-			cout << i << endl;
             // ecriture du noeud
-            fichierGraphe<< "\t"<<iteGraphe->first.GetOutputComplet();
+			PageInternet pageUrlTronquee1( iteGraphe->first );
+			if ( pageUrlTronquee1.GetUrl( ).size() > SIZE_URL_MAX )
+			{
+				pageUrlTronquee1 = PageInternet( pageUrlTronquee1.GetUrl( ).substr( 0, SIZE_URL_MAX ) + "[...]" );
+			}
+            fichierGraphe<< "\t" << pageUrlTronquee1.GetOutputComplet( );
             if( iteGraphe->first.GetEstIsole( ) == true )
             {
                 fichierGraphe << "[label = " << iteGraphe->first.GetOutputExt( ) << "]";
@@ -56,9 +64,15 @@ int GrapheRequetes::ExportFormatGraphViz( string fichier ) const
             // ecriture des aretes
             for ( iteArc = iteGraphe->second.begin( ); iteArc != iteGraphe->second.end( ); iteArc++ )
             {
-                fichierGraphe << iteArc->GetRequeteur( ).GetOutputComplet( ) << " -> ";
-                fichierGraphe << iteGraphe->first.GetOutputComplet( );
-                fichierGraphe << " [label = " << iteArc->GetNombreAcces( ) << "];\n";
+                PageInternet pageUrlTronquee2( iteArc->first );
+                if ( pageUrlTronquee2.GetUrl( ).size() > SIZE_URL_MAX )
+                {
+                    pageUrlTronquee2 = PageInternet( pageUrlTronquee2.GetUrl( ).substr( 0, SIZE_URL_MAX ) + "[...]" );
+                }
+                fichierGraphe << "\t" ;
+                fichierGraphe << pageUrlTronquee2.GetOutputComplet( ) << " -> ";
+                fichierGraphe << pageUrlTronquee1.GetOutputComplet( );
+                fichierGraphe << " [label = " << iteArc->second << "];\n";
             }
         }
 

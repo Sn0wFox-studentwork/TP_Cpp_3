@@ -1,0 +1,17 @@
+//Fichier testsGraphe/out5.dot
+
+
+
+digraph {
+	"http:/\/site1.com/rsc1.t";
+	"http:/\/site1.com/rsc2.t" -> "http:/\/site1.com/rsc1.t" [label = 1];
+	"http:/\/site1.com/rsc3.t" -> "http:/\/site1.com/rsc1.t" [label = 3];
+	"http:/\/site1.com/rsc4.t" -> "http:/\/site1.com/rsc1.t" [label = 7];
+	"http:/\/site1.com/rsc2.t";
+	"http:/\/site1.com/rsc1.t" -> "http:/\/site1.com/rsc2.t" [label = 5];
+	"http:/\/site1.com/rsc3.t";
+	"http:/\/site1.com/rsc5.t" -> "http:/\/site1.com/rsc3.t" [label = 2];
+	"http:/\/site1.com/rsc4.t";
+	"http:/\/site1.com/rsc5.t" -> "http:/\/site1.com/rsc4.t" [label = 9];
+	"http:/\/site1.com/rsc5.t";
+}

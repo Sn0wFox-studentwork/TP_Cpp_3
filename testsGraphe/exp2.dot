@@ -1,0 +1,7 @@
+//Fichier testsGraphe/out2.dot
+
+
+
+digraph {
+	"http:/\/site1.com/rsc.t";
+}

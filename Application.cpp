@@ -21,6 +21,13 @@ using namespace std;
 
 //------------------------------------------------------------- Constantes
 //#define MAP
+// Constantes evitant la redondance et permettant plus de modularite
+const string STR_GOOD_REQUESTS = string( "200" );
+const string STR_DIRECT_REQUEST = string( "-" );
+const string STR_DOUBLEQUOTE = string( "\"" );
+const string STR_GET = string( "GET" );
+const size_t SIZE_STR_GET = STR_GET.length( );
+const size_t SIZE_STR_CODERETOUR = 3;
 
 //----------------------------------------------------------- Types privés
 typedef pair<PageInternet, int> AccesPage;								// Permet de modeliser le nombre d'acces a une page particuliere
@@ -54,21 +61,16 @@ int Application::Run ( const string& nomGraph, int heure )
 //				Une fois le fichier analyse, si le flag FLAG_DRAW_GRAPH est present, on ecrit le graph sur le disque via
 //				la methode ecrireGraph, dont on retourne le code de retour pour terminer la methode. Sinon,
 //				on affiche les 10 pages les plus cnosultees et on retourne le code 0.
-// NB :		L'url du requeteur ne peut jamais etre relative. Elle ne peut etre qu'absolue ou nulle, c'est a dire "-".
-// Cas limite :	navigation dans un onglet, ouverture d'un second onglet puis navigation, puis retour dans le
-//				premier onglet et acces direct a une page relative (via frappe, signet ou autre).
+//				
+// NB :			L'url du requeteur ne peut jamais etre relative. Elle ne peut etre qu'absolue ou nulle, c'est a dire "-".
 {
 	// Declarations des variables de traitement
-	ifstream fichier(fichierEntree, ios::in);
-	string racine = "http://google.com";		// Racine initiale par defaut
+	ifstream fichier( fichierEntree, ios::in );
+	string derniereRacineNonNulle = "INCONNUE";		// Racine initiale	
 	string lecture;
-	string tamponArc;
-	string tamponArcur;
+	string tamponRequete;
+	string tamponRequeteur;
 	size_t posTampon;
-	// Constantes evitant la redondance et permettant plus de modularite
-	const string STR_GET = string( "GET" );
-	const string STR_DOUBLEQUOTE = string( "\"" );
-	const size_t SIZE_STR_GET = STR_GET.length( );
 
 	// On verifie que le fichier a bien ete ouvert
 	if ( !fichier )
@@ -84,6 +86,7 @@ int Application::Run ( const string& nomGraph, int heure )
 		// Recherche des premiers elements qui nous interessent
 		posTampon = lecture.find("[");
 		posTampon = lecture.substr( posTampon ).find( ":" );
+
 		// Si on choisi de ne garder que les requetes a une certaine heure
 		if ( ( flags & FLAG_ONE_HOUR ) == FLAG_ONE_HOUR )
 		{
@@ -93,63 +96,78 @@ int Application::Run ( const string& nomGraph, int heure )
 				continue;
 			}
 		}
-		posTampon = lecture.find( STR_GET );
-		// Si il ne s'agit pas d'une requete de type GET, on saute la ligne
-		if ( posTampon == string::npos )
-		{
-			continue;
-		}
-		tamponArc = lecture.substr( posTampon + SIZE_STR_GET + 1,
-			lecture.substr( posTampon + SIZE_STR_GET + 1 ).find(" ") );
-			// A partir de la tamponArc contient l'url a laquelle on a voulu acceder
-		lecture = lecture.substr( posTampon );
+
+		// Si il ne s'agit pas d'une requete de type GET
 		posTampon = lecture.find( STR_DOUBLEQUOTE );
 		lecture = lecture.substr( posTampon + 1 );
-		posTampon = lecture.find( STR_DOUBLEQUOTE );
-			// posTampon arrive au debut de l'url du requeteur
-		tamponArcur = lecture.substr( posTampon + 1, lecture.substr( posTampon + 1 ).find( STR_DOUBLEQUOTE ) );
-			// tamponArcur contient l'url du requeteur
-
-#ifdef MAP
-		cout << "Arc : " << tamponArc << " Arcur : " << tamponArcur << endl;
-#endif
-
-		PageInternet pageArc( tamponArc );
-		PageInternet pageRequetrice( tamponArcur );
-		
-		// Si la requete a une url relative
-		if ( pageArc.GetRacine( ) == "" )
+		if ( lecture.substr( 0, SIZE_STR_GET ) != STR_GET )
 		{
-			// Si on dispose de l'url de la page requetrice, on prend sa racine
-			if ( pageRequetrice.GetRacine( ) != "-" )
-			{
-				racine = pageRequetrice.GetRacine( );
-				// NB : pas besoin d'inserer "/"
-			}
-
-			// Si le requeteur n'existe pas (url "-"), on prend la racine de la page precedente
-			pageArc = PageInternet( racine + tamponArc );	// On prend la racine du requeteur
-
+			continue;	// On saute la ligne
 		}
 
-		// Si le flag de l'option -e est present, on verifie que les deux PageInternets sont du bon type
+		// Prise de l'url de la page requetee
+		tamponRequete = lecture.substr( SIZE_STR_GET + 1, lecture.find( STR_DOUBLEQUOTE ) - SIZE_STR_GET - 1 );
+		tamponRequete = tamponRequete.substr( 0, tamponRequete.rfind(" ") );	// Recherche inversee qui evite les erreurs dues a des espaces dans l'url
+																				// (ils auraient du etre remplaces par %20, mais c'est possible qu'il en reste)
+
+		// Verification du code de retour de la requete
+		posTampon = lecture.find( STR_DOUBLEQUOTE );
+		lecture = lecture.substr( posTampon + 2 );		// lecture commence maintenant au debut du code de retour
+
+		// Si on la requete n'a pas donne un des codes retour qui nous interesse
+		posTampon = STR_GOOD_REQUESTS.find( lecture.substr( 0, SIZE_STR_CODERETOUR ) );
+		if ( posTampon == string::npos )
+		{
+			continue;	// On saute la ligne
+		}
+
+		// Prise de l'url de la page requetrice
+		posTampon = lecture.find( STR_DOUBLEQUOTE );
+		lecture = lecture.substr( posTampon + 1 );
+		tamponRequeteur = lecture.substr( 0, lecture.find( STR_DOUBLEQUOTE ) );
+
+#ifdef MAP
+		cout << "Requete : " << tamponRequete << " Requeteur : " << tamponRequeteur << endl;
+#endif
+
+		PageInternet pageRequete( tamponRequete );
+		PageInternet pageRequetrice( tamponRequeteur );
+		
+		// Si on dispose de l'url de la page requetrice, on prend sa racine
+		if ( pageRequetrice.GetRacine( ) != STR_DIRECT_REQUEST )
+		{
+			derniereRacineNonNulle = pageRequetrice.GetRacine( );
+		}
+
+		// Si la requete a une url relative
+		if ( pageRequete.GetRacine( ) == "" )
+		{
+			pageRequete = PageInternet( derniereRacineNonNulle + tamponRequete );	// On prend la derniere racine non vide
+			// NB : pas besoin d'inserer "/"
+		}
+
+		// On garde une trace de la dernière racine non nulle, pour les futures requêtes.
+		derniereRacineNonNulle = pageRequete.GetUrl( );
+
+		// Si le flag d'exclusion des images et scripts est present, on verifie que les deux PageInternets sont du bon type
 		if ( ( flags & FLAG_E_OPTION ) == FLAG_E_OPTION )
 		{
-			if ( IMAGE.find( pageArc.GetType( ) ) != string::npos
-				|| SCRIPT.find( pageArc.GetType( ) ) != string::npos )
+			if ( IMAGE.find( pageRequete.GetType( ) ) != string::npos
+				|| SCRIPT.find( pageRequete.GetType( ) ) != string::npos )
 			{
 				continue;		// On ne traite pas la ligne :
 								// que le requeteur soit d'un type acceptable ne nous interesse pas
 			}
-			if ( IMAGE.find( pageRequetrice.GetType( ) ) != string::npos
-				|| SCRIPT.find( pageRequetrice.GetType( ) ) != string::npos )
+			if ( pageRequetrice.GetUrl( ) != STR_DIRECT_REQUEST
+				&& ( IMAGE.find( pageRequetrice.GetType( ) ) != string::npos
+				|| SCRIPT.find( pageRequetrice.GetType( ) ) != string::npos ) )
 			{
 				pageRequetrice = PageInternet ( STR_REQUETEUR_EXCLU );
 			}
 		}
 
 		// Remplissage graph
-		remplirGraph( pageArc, pageRequetrice );
+		remplirGraph( pageRequete, pageRequetrice );
 
 	}	//----- Fin de while ( ligne a lire )
 
@@ -269,7 +287,7 @@ void Application::afficherResultats ( unsigned int nbResultats ) const
 		// Calcul du nombre total d'acces
 		while ( i < tailleArcs )
 		{
-			nbTotalAcces += itg->second[i].GetNombreAcces( );
+			nbTotalAcces += itg->second[i].second;
 			i++;
 		}
 
@@ -297,7 +315,7 @@ void Application::afficherResultats ( unsigned int nbResultats ) const
 	}	//----- Fin de for (IterateurGraph)
 
 	// Si il y a moins de nbResultats noeuds, la structure de resultats n'est pas triee
-	if ( meilleursResultats.size() < nbResultats )
+	if ( meilleursResultats.size( ) < nbResultats )
 	{
 		meilleursResultats.sort( ComparaisonAccesPages( ) );	// On trie
 	}
@@ -332,16 +350,16 @@ void Application::remplirGraph ( const PageInternet& pageRequetee, const PageInt
 										//		a chaque fois, bien qu'en O(log2(n))
 
 	// Que le requeteur soit d'un type indesirable ou non, c'est le meme algorithme d'insertion
-	ita = find( arcs.begin( ), arcs.end( ), ArcRequete( pageRequetrice ) );
+	ita = find( arcs.begin( ), arcs.end( ), ArcRequete( pageRequetrice, 1 ) );
 
 	// Si le requeteur n'est pas present dans le vecteur d'arcs
 	if ( ita == arcs.end( ) )
 	{
-		arcs.push_back( ArcRequete( pageRequetrice ) );	// On l'insere
+		arcs.push_back( ArcRequete( pageRequetrice, 1 ) );	// On l'insere
 	}
 	else
 	{
-		(*ita)++;
+		ita->second++;
 	}
 
 	// Si la page d'url requeteur est du bon type
