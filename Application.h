@@ -25,16 +25,15 @@ typedef uint16_t Uint16;	// Type des flags (= options)
 
 //------------------------------------------------------------- Constantes
 const std::string STR_REQUETEUR_EXCLU = "Autre Type Requeteur";		// Signal un requeteur de type indesirable
-const std::string STR_SERVER = "http://intranet-if.insa-lyon.fr";
 
 // Les constantes suivantes representent les options avec lesquelles on peut lancer l'application :
-const Uint16 FLAG_NO_FLAGS			=	0x0000;								// Sans option
-const Uint16 FLAG_DRAW_GRAPH		=	0x0001;								// Dessiner le graphe [-g]
-const Uint16 FLAG_NO_IMAGE			=	0x0010;								// Exclure les images
-const Uint16 FLAG_NO_SCRIPT			=	0x0100;								// Eclure les scripts js et css
-const Uint16 FLAG_EXCLUDE_OPTION	=	FLAG_NO_IMAGE | FLAG_NO_SCRIPT;		// Exclure scripts et images [-e]
-const Uint16 FLAG_ONE_HOUR			=	0x1000;								// Pour une heure precise [-t]
-const Uint16 FLAG_ALL_FLAGS			=	FLAG_DRAW_GRAPH | FLAG_EXCLUDE_OPTION | FLAG_ONE_HOUR;	// Toutes les options precedentes
+const Uint16 FLAG_NO_FLAGS		=	0x0000;								// Sans option
+const Uint16 FLAG_DRAW_GRAPH	=	0x0001;								// Dessiner le graphe [-g]
+const Uint16 FLAG_NO_IMAGE		=	0x0010;								// Exclure les images
+const Uint16 FLAG_NO_SCRIPT		=	0x0100;								// Eclure les scripts js et css
+const Uint16 FLAG_E_OPTION		=	FLAG_NO_IMAGE | FLAG_NO_SCRIPT;		// Exclure scripts et images [-e]
+const Uint16 FLAG_ONE_HOUR		=	0x1000;								// Pour une heure precise [-t]
+const Uint16 FLAG_ALL_FLAGS		=	FLAG_DRAW_GRAPH | FLAG_E_OPTION | FLAG_ONE_HOUR;	// Toutes les options precedentes
 
 //------------------------------------------------------------------------
 // Rôle de la classe <Application>

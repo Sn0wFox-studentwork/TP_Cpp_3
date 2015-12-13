@@ -6,7 +6,7 @@ copyright            : (C) 2015 par Pericas-Moya & Belletier
 *************************************************************************/
 
 //---------- Réalisation du main (fichier main.cpp) ----------------------
-//#define MAP
+#define MAP
 
 //---------------------------------------------------------------- INCLUDE
 
@@ -37,10 +37,8 @@ int main ( int argc, char** argv )
 	string heure = "0";
 	string nomFichierEntree;
 	string nomGraph = "";
-	int verifHeure = 0;
 
 #ifdef MAP
-	// Inserer les tests unitaires ici
 	TestPrintResultats( );
 #endif
 
@@ -68,7 +66,7 @@ int main ( int argc, char** argv )
 				i++;		// On saute le prochain argument d'entree, puisqu'on vient de le lire
 				break;
 			case 'e':					// Option [-e]
-				flags |= FLAG_EXCLUDE_OPTION;
+				flags |= FLAG_E_OPTION;
 				break;
 			case 't':					// Option [-t]
 				flags |= FLAG_ONE_HOUR;
@@ -79,29 +77,14 @@ int main ( int argc, char** argv )
 				i++;		// On saute le prochain argument d'entree, puisqu'on vient de le lire
 				break;
 			default:					// Mauvaise option
-				cerr << "Option inconnue" << endl;
-				return -4;
+				break;
 			}
 		}	//----- Fin de if ( option )
 		else
 		// Recuperation du fichier d'entree
 		{
-			// S'il subsiste des parametres
-			if ( i != argc-1 )
-			{
-				cerr << "Trop de parametres" << endl;
-				return -5;
-			}
 			nomFichierEntree = argv[i];
 		}
-	}
-
-	// Verification de la coherence de l'heure
-	verifHeure = atoi( heure.c_str( ) );
-	if ( verifHeure > 23 || verifHeure < 0 )
-	{
-		cerr << "Heure specifiee invalide" << endl;
-		return -3;
 	}
 
 	// Creation de l'instance d'Application
@@ -114,6 +97,6 @@ int main ( int argc, char** argv )
 	Application app( nomFichierEntree, flags );
 
 	// Lancement du traitement puis fin du programme : on retourne la valeur retournee par Run
-	return app.Run( nomGraph, verifHeure );
+	return app.Run( nomGraph, strtol( heure.c_str( ), nullptr, 0 ) );
 
 }	//----- Fin de main

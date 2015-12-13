@@ -33,12 +33,12 @@ using namespace std;
 //{
 //} //----- Fin de Méthode
 
-string PageInternet::GetRacine ( ) const
+std::string PageInternet::GetRacine ( ) const
 // Algorithme : recherche du / de séparation dans la chaine
 {
-    string racine;
-    size_t tampon;		//traite le cas où on a une url complète
-    if ( url == "-" )	//traitement du cas limite
+    std::string racine;
+    size_t tampon;//traite le cas où on a une url complète
+    if ( url == "-" )//traitement du cas limite
     {
         return "-";
     }
@@ -46,9 +46,9 @@ string PageInternet::GetRacine ( ) const
     if ( tampon != string::npos )
     {
 
-        if( tampon < url.size( ) -2 )	//on evite la sortie de tableau au test suivant
+        if( tampon < url.size( ) -2 )//on evite la sortie de tableau au test suivant
         {
-            if( url[tampon+1]=='/' )	//on evite de s'arreter au // de http://
+            if( url[tampon+1]=='/' )//on evite de s'arreter au // de http://
             {
                 if( url.substr( tampon+2 ).find( "/" ) != string::npos )
                 {
@@ -59,6 +59,7 @@ string PageInternet::GetRacine ( ) const
                 {
                     racine = url;
                 }
+
             }
             else
             {
@@ -77,11 +78,11 @@ string PageInternet::GetRacine ( ) const
     return racine;
 }
 
-string PageInternet::GetOutputComplet ( ) const
+std::string PageInternet::GetOutputComplet ( ) const
 // Algorithme : recherche du // pour l'echapper+ echappage des "
 {
     size_t tampon = url.find( "/" );
-    string urlEchappee = url;
+    std::string urlEchappee = url;
     //Recherche du //
     if ( tampon != string::npos )
     {
@@ -103,18 +104,18 @@ string PageInternet::GetOutputComplet ( ) const
         }
     }
     return "\"" + urlEchappee + "\"";
-}	//----- Fin de GetOutputComplet( )
+}
 
-string PageInternet::GetOutputExt ( ) const
+std::string PageInternet::GetOutputExt ( ) const
 // Algorithme : echappage des "
 {
     return "\"" + GetExtension ( ) + "\"";
-}	//----- Fin de GetOutputExt( )
+}
 
-string PageInternet::GetExtension ( ) const
+std::string PageInternet::GetExtension ( ) const
 //Algorithme : recherche du / de séparation dans la chaine
 {
-    string extension;
+    std::string extension;
     size_t tampon;		//traite le cas où on a une url complète
     if ( url == "-" )	//traitement du cas limite
     {
@@ -124,14 +125,14 @@ string PageInternet::GetExtension ( ) const
     if ( tampon != string::npos )
     {
 
-        if(tampon < url.size() -2)		//on evite la sortie de tableau au url suivant
+        if(tampon < url.size() -2)//on evite la sortie de tableau au url suivant
         {
-            if( url[tampon+1]=='/' )	//on evite de s'arreter au // de http://
+            if( url[tampon+1]=='/' )//on evite de s'arreter au // de http://
             {
-                if ( url.substr( tampon+2 ).find( "/" ) != string::npos )
+                if ( url.substr(tampon+2).find("/") != string::npos)
                 {
-                    tampon = tampon + 2 + url.substr( tampon+2 ).find( "/" );
-                    extension = url.substr( tampon );
+                    tampon = tampon + 2 + url.substr(tampon+2).find("/");
+                    extension = url.substr(tampon);
                 }
                 else
                 {
@@ -153,19 +154,18 @@ string PageInternet::GetExtension ( ) const
         extension = "";
     }
     return extension;
-}	//----- Fin de GetExtension( )
+}
 
-string PageInternet::GetType( ) const
-// Algorithme :	retourne ce qui se trouve apres la derniere occurence de "." dans la chaine.
+string PageInternet::GetType() const
 {
-	size_t tampon;					//recupere l'url du dernier point
-	tampon = url.rfind( "." );
-	if ( tampon != string::npos )	//dans le cas où il y a un type de fichier défini
+	size_t tampon;//recupere l'url du dernier point
+	tampon = url.rfind(".");
+	if ( tampon != string::npos )//dans le cas où il y a un type de fichier défini
 	{
-		return url.substr( tampon );
+		return url.substr(tampon);
 	}
 	return "";
-}	//----- Fin de GetType( )
+}
 
 //------------------------------------------------- Surcharge d'opérateurs
 PageInternet & PageInternet::operator= ( const PageInternet & unePageInternet )
@@ -183,16 +183,16 @@ PageInternet & PageInternet::operator= ( const PageInternet & unePageInternet )
 } //----- Fin de operator =
 
 bool PageInternet::operator< ( const PageInternet& unePageInternet ) const
-//Algorithme : comparaison d'url par ordre lexicographique
+//Algorithme : comparaison d'url
 {
 	return url < unePageInternet.url;
 
-} //----- Fin de operator <
+} // Fin de operator <
 
 bool PageInternet::operator== ( const PageInternet& unePageInternet ) const
 {
 	return url == unePageInternet.url;
-} //----- Fin de operator ==
+} // Fin de operator ==
 
 //-------------------------------------------- Constructeurs - destructeur
 PageInternet::PageInternet ( const PageInternet & unePageInternet ) :
@@ -206,7 +206,7 @@ PageInternet::PageInternet ( const PageInternet & unePageInternet ) :
 } //----- Fin de PageInternet (constructeur de copie)
 
 
-PageInternet::PageInternet ( ) : url( "-" ), estIsole( true )
+PageInternet::PageInternet ( ) : url("-"), estIsole(true)
 // Algorithme : la page internet de base est celle de l'accès direct
 {
 #ifdef MAP
@@ -216,8 +216,8 @@ PageInternet::PageInternet ( ) : url( "-" ), estIsole( true )
 }	//----- Fin de PageInternet
 
 
-PageInternet::PageInternet( const string& url ) : url( url ), estIsole( true )
-// Algorithme : utilisation du constructeur de copie de string et init booleen
+PageInternet::PageInternet( const std::string& url ) : url( url ), estIsole(true)
+// Algorithme :
 {
 #ifdef MAP
     cout << "Appel au constructeur par url de <PageInternet>" << endl;
@@ -226,6 +226,7 @@ PageInternet::PageInternet( const string& url ) : url( url ), estIsole( true )
 
 PageInternet::~PageInternet ( )
 // Algorithme : rien de particulier à faire
+//
 {
 #ifdef MAP
     cout << "Appel au destructeur de <PageInternet>" << endl;

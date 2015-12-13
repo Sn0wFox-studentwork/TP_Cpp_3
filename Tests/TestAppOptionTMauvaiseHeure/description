@@ -1,1 +1,0 @@
-Ce test permet de verifie que si l'utilisateur rentre une heure non comprise entre 0 et 23, le programme s'arrete en notifiant l’utilisateur de « Heure specifiee invalide » sur la sortie d'erreur standard

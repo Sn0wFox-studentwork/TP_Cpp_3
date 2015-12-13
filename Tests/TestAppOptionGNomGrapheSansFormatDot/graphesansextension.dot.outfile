@@ -1,8 +1,0 @@
-//Fichier graphesansextension.dot
-
-
-
-digraph {
-	"http:/\/intranet-if.insa-lyon.fr/temps/4IF19.html"[label = "/temps/4IF19.html"];
-	"http:/\/intranet-if.insa-lyon.fr/temps/4IF18.html" -> "http:/\/intranet-if.insa-lyon.fr/temps/4IF19.html" [label = 1];
-}

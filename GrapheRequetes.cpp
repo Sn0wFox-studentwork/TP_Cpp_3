@@ -24,8 +24,8 @@ using namespace std;
 int GrapheRequetes::ExportFormatGraphViz( const string& fichier ) const
 // Algorithme :
 {
-	// Taille maximale de l'url d'une page pour exportation dans le graphe
-	const size_t SIZE_URL_MAX = 60;		// Au dela, l'url sera tronquee et on lui adjoindra [...]
+	// Taille maximale de l'url d'une age pour exportation dans le graphe
+	const size_t SIZE_URL_MAX = 30;		// Au dela, l'url sera tronquee et on lui adjoindra [...]
 
 	// Declaration des variables de manipulation du graphe :
     IterateurGrapheRequetesConst iteGraphe;
@@ -55,10 +55,10 @@ int GrapheRequetes::ExportFormatGraphViz( const string& fichier ) const
 			{
 				pageUrlTronquee1 = PageInternet( pageUrlTronquee1.GetUrl( ).substr( 0, SIZE_URL_MAX ) + "[...]" );
 			}
-            fichierGraphe << "\t" << pageUrlTronquee1.GetOutputComplet( );
+            fichierGraphe<< "\t" << pageUrlTronquee1.GetOutputComplet( );
             if( iteGraphe->first.GetEstIsole( ) == true )
             {
-                fichierGraphe << "[label = " << pageUrlTronquee1.GetOutputExt( ) << "]";
+                fichierGraphe << "[label = " << iteGraphe->first.GetOutputExt( ) << "]";
             }
             fichierGraphe << ";\n";
             // ecriture des aretes
@@ -81,7 +81,6 @@ int GrapheRequetes::ExportFormatGraphViz( const string& fichier ) const
         return 0;
     }
 	return -1002;		// En cas d'erreur lors de l'ecriture
-
 
 }	//----- Fin de ExportFormatGraphViz
 

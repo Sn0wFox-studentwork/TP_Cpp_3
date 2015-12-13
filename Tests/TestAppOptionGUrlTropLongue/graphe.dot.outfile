@@ -1,8 +1,0 @@
- //Fichier graphe.dot
-
-
-
-digraph {
-	"http:/\/intranet-if.insa-lyon.fr/temps/azertyuiopqsdfghjklmw[...]"[label = "/\/intranet-if.insa-lyon.fr/temps/azertyuiopqsdfghjklmw[...]"];
-	"http:/\/intranet-if.insa-lyon.fr/temps/3IF37.html" -> "http:/\/intranet-if.insa-lyon.fr/temps/azertyuiopqsdfghjklmw[...]" [label = 1];
-}

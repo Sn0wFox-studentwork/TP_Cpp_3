@@ -41,14 +41,14 @@ void TestFlags ()
 		cout << "FLAG_DRAW_GRAPH !" << endl;
 	}
 	// Flags composites : la comparaison est obligatoire (parenthese pour enlever un warning du compilo)
-	if ( ( flags & FLAG_EXCLUDE_OPTION ) == FLAG_EXCLUDE_OPTION )
+	if ( ( flags & FLAG_E_OPTION ) == FLAG_E_OPTION )
 	{
-		cout << "FLAG_EXCLUDE_OPTION !" << endl;
+		cout << "FLAG_E_OPTION !" << endl;
 	}
 
 	flags = FLAG_NO_IMAGE;
 	cout << "Flags : " << (int)flags << " FLAG_NO_IMAGE : " << (int)FLAG_NO_IMAGE << " FLAG_NO_SCRIPT : " << (int)FLAG_NO_SCRIPT;
-	cout << " FLAG_EXCLUDE_OPTION : " << (int)FLAG_EXCLUDE_OPTION << endl;
+	cout << " FLAG_E_OPTION : " << (int)FLAG_E_OPTION << endl;
 	if ( flags & FLAG_NO_IMAGE )
 	{
 		cout << "FLAG_NO_IMAGE !" << endl;
@@ -58,9 +58,9 @@ void TestFlags ()
 		cout << "Pas FLAG_NO_SCRIPT !" << endl;
 	}
 	// Utilisation de flags composites : utiliser l'operateur == apres extraction
-	if ( ( flags & FLAG_EXCLUDE_OPTION ) == FLAG_EXCLUDE_OPTION)
+	if ( ( flags & FLAG_E_OPTION ) == FLAG_E_OPTION)
 	{
-		cout << "FLAG_EXCLUDE_OPTION !" << endl;
+		cout << "FLAG_E_OPTION !" << endl;
 	}
 
 }

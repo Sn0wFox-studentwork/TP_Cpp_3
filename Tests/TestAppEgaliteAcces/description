@@ -1,1 +1,0 @@
-Ce test permet de tester l'application sans aucun flag, et de verifier que si deux pages ont le meme nombre d'acces, c'est la premiere qui est apparue dans le fichier de log qui sera affichee en premier.

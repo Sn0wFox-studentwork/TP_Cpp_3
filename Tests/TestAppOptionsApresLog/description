@@ -1,1 +1,0 @@
-Ce test permet de verifier que si des options se trouvent apres le nom du fichier a analyser, l'application s'arrete avec le code -5 et notifie l'utilisateur de « Trop de parametres »
