@@ -1,0 +1,1 @@
+Ce test permet de verifier que si l'utilisateur rentre une option inconnue, il est notifie sur la sortie d'erreur standard par « Option inconnue » et que le programme s'arrete avec le code -4

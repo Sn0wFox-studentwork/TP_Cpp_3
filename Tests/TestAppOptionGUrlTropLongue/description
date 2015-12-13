@@ -1,0 +1,1 @@
+Ce test permet de verifier que lorsqu'on exporte le resultat de l'analyse au format .dot, les urls de plus de 60 caracteres sont tronquees et se voient adjoindre "[...]"

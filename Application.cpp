@@ -15,6 +15,7 @@ using namespace std;
 #include <fstream>
 #include <algorithm>
 #include <list>
+#include <cstdint>
 
 //------------------------------------------------------ Include personnel
 #include "Application.h"
@@ -83,15 +84,17 @@ int Application::Run ( const string& nomGraph, int heure )
 	// Lecture du fichier et remplissage du graph
 	while ( getline ( fichier, lecture ) )		// Tant qu'il y a des lignes a lire
 	{
-		// Recherche des premiers elements qui nous interessent
-		posTampon = lecture.find("[");
-		posTampon = lecture.substr( posTampon ).find( ":" );
-
 		// Si on choisi de ne garder que les requetes a une certaine heure
 		if ( ( flags & FLAG_ONE_HOUR ) == FLAG_ONE_HOUR )
 		{
+			// Recherche des premiers elements qui nous interessent
+			posTampon = lecture.find( "[" );
+			lecture = lecture.substr( posTampon );
+			posTampon = lecture.find( ":" );
+			lecture = lecture.substr( posTampon + 1 );	// lecture commence desormais au debut de l'heure de la requete
+
 			// Si l'heure n'est pas bonne, on saute la ligne
-			if ( strtol( lecture.substr( posTampon + 1, 2 ).c_str( ), nullptr, 0 ) != heure )
+			if ( atoi( lecture.substr( 0, lecture.find( ":" ) ).c_str( ) ) != heure )
 			{
 				continue;
 			}
@@ -132,17 +135,11 @@ int Application::Run ( const string& nomGraph, int heure )
 
 		PageInternet pageRequete( tamponRequete );
 		PageInternet pageRequetrice( tamponRequeteur );
-		
-		// Si on dispose de l'url de la page requetrice, on prend sa racine
-		if ( pageRequetrice.GetRacine( ) != STR_DIRECT_REQUEST )
-		{
-			derniereRacineNonNulle = pageRequetrice.GetRacine( );
-		}
 
 		// Si la requete a une url relative
 		if ( pageRequete.GetRacine( ) == "" )
 		{
-			pageRequete = PageInternet( derniereRacineNonNulle + tamponRequete );	// On prend la derniere racine non vide
+			pageRequete = PageInternet( STR_SERVER + tamponRequete );	// On prend la derniere racine non vide
 			// NB : pas besoin d'inserer "/"
 		}
 
@@ -150,7 +147,7 @@ int Application::Run ( const string& nomGraph, int heure )
 		derniereRacineNonNulle = pageRequete.GetUrl( );
 
 		// Si le flag d'exclusion des images et scripts est present, on verifie que les deux PageInternets sont du bon type
-		if ( ( flags & FLAG_E_OPTION ) == FLAG_E_OPTION )
+		if ( ( flags & FLAG_EXCLUDE_OPTION ) == FLAG_EXCLUDE_OPTION )
 		{
 			if ( IMAGE.find( pageRequete.GetType( ) ) != string::npos
 				|| SCRIPT.find( pageRequete.GetType( ) ) != string::npos )
@@ -312,7 +309,7 @@ void Application::afficherResultats ( unsigned int nbResultats ) const
 				meilleursResultats.pop_back( );
 			}
 		}	//----- Fin de if ( meilleursResultats.size( ) < NOMBRE_RESULTATS ) else
-	}	//----- Fin de for (IterateurGraph)
+	}	//----- Fin de for ( IterateurGraph )
 
 	// Si il y a moins de nbResultats noeuds, la structure de resultats n'est pas triee
 	if ( meilleursResultats.size( ) < nbResultats )
@@ -321,6 +318,10 @@ void Application::afficherResultats ( unsigned int nbResultats ) const
 	}
 
 	// Affichage
+	if ( meilleursResultats.begin( ) == meilleursResultats.end( ) )
+	{
+		cout << "Aucun resultat" << endl;
+	}
 	for ( IterateurMeilleuresPagesConst itmp = meilleursResultats.begin( ); itmp != meilleursResultats.end( ); itmp ++ )
 	{
 		cout << itmp->first.GetUrl() << " (" << itmp->second << " hits)" << endl;
@@ -350,7 +351,14 @@ void Application::remplirGraph ( const PageInternet& pageRequetee, const PageInt
 										//		a chaque fois, bien qu'en O(log2(n))
 
 	// Que le requeteur soit d'un type indesirable ou non, c'est le meme algorithme d'insertion
-	ita = find( arcs.begin( ), arcs.end( ), ArcRequete( pageRequetrice, 1 ) );
+	for ( ita = arcs.begin( ); ita != arcs.end( ); ita++ )
+	{
+		if ( ita->first == pageRequetrice )
+		{
+			break;
+		}
+	}		// NB :	pas possible d'utiliser l'algorithme find qui comparerait les deux membres de ArcRequete.
+			//		En effet, on ne peut pas predire le nombre d'acces
 
 	// Si le requeteur n'est pas present dans le vecteur d'arcs
 	if ( ita == arcs.end( ) )
@@ -362,11 +370,11 @@ void Application::remplirGraph ( const PageInternet& pageRequetee, const PageInt
 		ita->second++;
 	}
 
-	// Si la page d'url requeteur est du bon type
+	/*// Si la page d'url requeteur est du bon type
 	if ( pageRequetrice.GetUrl( ) != STR_REQUETEUR_EXCLU )
 	{
 		graphe[pageRequetrice];	// On l'insere si elle n'est pas presente en tant que noeud,
 								// sinon rien ne se passe.
-	}
+	}*/
 
 }	//----- Fin de remplirGraph
