@@ -1,0 +1,20 @@
+//Fichier graphe.dot
+
+
+
+digraph {
+	"http:/\/intranet-if.insa-lyon.fr/temps/"[label = "/temps/"];
+	"http:/\/www.google.fr/url?sa=t&rct=j&q=&esrc=s&source=web&cd=[...]" -> "http:/\/intranet-if.insa-lyon.fr/temps/" [label = 1];
+	"http:/\/intranet-if.insa-lyon.fr/temps/3IF37.html"[label = "/temps/3IF37.html"];
+	"http:/\/intranet-if.insa-lyon.fr/temps/" -> "http:/\/intranet-if.insa-lyon.fr/temps/3IF37.html" [label = 1];
+	"http:/\/intranet-if.insa-lyon.fr/temps/3IF38.html"[label = "/temps/3IF38.html"];
+	"http:/\/intranet-if.insa-lyon.fr/temps/3IF37.html" -> "http:/\/intranet-if.insa-lyon.fr/temps/3IF38.html" [label = 2];
+	"http:/\/intranet-if.insa-lyon.fr/temps/3IF39.html"[label = "/temps/3IF39.html"];
+	"http:/\/intranet-if.insa-lyon.fr/temps/3IF38.html" -> "http:/\/intranet-if.insa-lyon.fr/temps/3IF39.html" [label = 1];
+	"http:/\/intranet-if.insa-lyon.fr/temps/4IF17.html"[label = "/temps/4IF17.html"];
+	"http:/\/intranet-if.insa-lyon.fr/temps/4IF16.html" -> "http:/\/intranet-if.insa-lyon.fr/temps/4IF17.html" [label = 1];
+	"http:/\/intranet-if.insa-lyon.fr/temps/4IF18.html"[label = "/temps/4IF18.html"];
+	"http:/\/intranet-if.insa-lyon.fr/temps/4IF17.html" -> "http:/\/intranet-if.insa-lyon.fr/temps/4IF18.html" [label = 2];
+	"http:/\/intranet-if.insa-lyon.fr/temps/4IF20.html"[label = "/temps/4IF20.html"];
+	"http:/\/intranet-if.insa-lyon.fr/temps/4IF19.html" -> "http:/\/intranet-if.insa-lyon.fr/temps/4IF20.html" [label = 1];
+}
